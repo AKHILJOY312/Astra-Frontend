@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Drawer, Row } from "antd";
 import { MenuOutlined } from "@ant-design/icons";
 import { SvgIcon } from "../../common/SvgIcon";
-import { Button } from "../../common/Button";
+import { Button } from "../../common/Button/index";
 import Container from "../../common/Container";
 
 const Header = () => {

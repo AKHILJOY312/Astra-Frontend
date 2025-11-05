@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Row, Col } from "antd";
 import { SvgIcon } from "../../common/SvgIcon";
-import Container from "../../common/Container";
+import Container from "../../common/Container/index";
 
 interface SocialLinkProps {
   href: string;
