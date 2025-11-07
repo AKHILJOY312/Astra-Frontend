@@ -1,55 +1,71 @@
-import { UserService } from "@/services/api/user.service";
-import { IUser } from "@/types/database";
-import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import axios from "axios";
 
-export const fetchCurrentUser = createAsyncThunk(
-  "authReducer/userData/fetchCurrentUser",
-  async () => {
-    const service = new UserService();
-    const response = await service.getCurrentUser().exec();
-    return response.data;
+interface AuthState {
+  loading: boolean;
+  error: string | null;
+  message: string | null;
+}
+
+const initialState: AuthState = {
+  loading: false,
+  error: null,
+  message: null,
+};
+const api = axios.create({
+  baseURL: "/api",
+  withCredentials: true,
+});
+export const registerUser = createAsyncThunk(
+  "auth/register",
+  async (
+    userData: {
+      name: string;
+      email: string;
+      password: string;
+      confirmPassword: string;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const res = await api.post("auth/register", userData);
+      return res.data;
+    } catch (error: any) {
+      return rejectWithValue(
+        error.response?.data?.message || "Registration failed"
+      );
+    }
   }
 );
 
-type InitialState = {
-  isAuth: boolean;
-  userData: null | IUser;
-  isLoading: boolean;
-};
-
-const initialState: InitialState = {
-  isAuth: false,
-  userData: null,
-  isLoading: false,
-};
-
-export const auth = createSlice({
+const authSlice = createSlice({
   name: "auth",
   initialState,
   reducers: {
-    logUser: (state, { payload }: PayloadAction<IUser>) => {
-      (state.isAuth = true), (state.userData = payload);
+    clearError: (state) => {
+      state.error = null;
     },
-    logout: (state) => {
-      state.isAuth = false;
-      state.userData = null;
+    clearMessage: (state) => {
+      state.message = null;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchCurrentUser.pending, (state) => {
-        state.isLoading = true;
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
       })
-      .addCase(fetchCurrentUser.fulfilled, (state, action) => {
-        state.isAuth = true;
-        state.userData = action.payload;
-        state.isLoading = false;
+      .addCase(registerUser.fulfilled, (state, action: PayloadAction<any>) => {
+        state.loading = false;
+        state.message = action.payload.message;
       })
-      .addCase(fetchCurrentUser.rejected, (state) => {
-        state.isLoading = false;
+      .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { logUser, logout } = auth.actions;
-export default auth.reducer;
+export const { clearError, clearMessage } = authSlice.actions;
+export default authSlice.reducer;

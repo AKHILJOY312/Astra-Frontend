@@ -15,16 +15,16 @@ const routes: RouteItem[] = [
   },
   {
     path: "/register",
-    component: "signUp/SignUp.tsx",
+    component: "SignUp.tsx",
     exact: true,
     layout: "auth",
   },
-  // {
-  //   path: '/projects',
-  //   component: 'Dashboard',
-  //   exact: true,
-  //   protected: true,
-  // },
+  {
+    path: "/verify-email",
+    component: "VerifyEmail.tsx",
+    exact: true,
+    layout: "auth", //auth,main,none
+  },
   // {
   //   path: '/projects/:id',
   //   component: 'ProjectPage',
