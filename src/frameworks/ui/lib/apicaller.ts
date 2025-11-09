@@ -4,6 +4,7 @@ import { tokenService } from "./tokenService";
 const api = axios.create({
   baseURL: "/api",
   withCredentials: true,
+  validateStatus: (status) => status >= 200 && status < 300,
 });
 
 // Add token to requests
@@ -31,6 +32,15 @@ api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+
+    if (
+      originalRequest.url.includes("/auth/login") ||
+      originalRequest.url.includes("/auth/register") ||
+      originalRequest.url.includes("/auth/refresh-token") ||
+      originalRequest.url.includes("/auth/forgot-password")
+    ) {
+      return Promise.reject(error);
+    }
 
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {

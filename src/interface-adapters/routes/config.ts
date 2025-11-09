@@ -9,25 +9,31 @@ const routes: RouteItem[] = [
 
   {
     path: "/",
-    component: "Home.tsx",
+    component: "Home",
     exact: true,
     layout: "main",
   },
   {
     path: "/register",
-    component: "SignUp.tsx",
+    component: "SignUp",
     exact: true,
     layout: "auth",
   },
   {
     path: "/verify-email",
-    component: "VerifyEmail.tsx",
+    component: "VerifyEmail",
     exact: true,
     layout: "auth", //auth,main,none
   },
   {
     path: "/login",
-    component: "LoginPage.tsx",
+    component: "LoginPage",
+    exact: true,
+    layout: "auth",
+  },
+  {
+    path: "/forget-password",
+    component: "ForgetPassword",
     exact: true,
     layout: "auth",
   },
@@ -37,6 +43,13 @@ const routes: RouteItem[] = [
     exact: true,
     protected: true,
     layout: "main",
+  },
+  {
+    path: "/reset-password",
+    component: "ResetPassword",
+    exact: true,
+    protected: false,
+    layout: "auth",
   },
   //  // {
   //   path: '/projects/:id',

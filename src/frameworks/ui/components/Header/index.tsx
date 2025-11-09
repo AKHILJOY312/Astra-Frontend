@@ -47,6 +47,8 @@ const Header = () => {
       </div>
       <div className="flex items-center gap-4 ml-6">
         <Button onClick={() => navigate("/login")}>Login</Button>
+      </div>
+      <div className="flex items-center gap-4 ml-6">
         <Button onClick={() => navigate("/register")}>Sign Up</Button>
       </div>
     </>

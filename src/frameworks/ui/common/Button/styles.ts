@@ -14,6 +14,7 @@ export const StyledButton = styled("button")<{ color?: string }>`
   max-width: 180px;
   transition: all 0.3s ease-in-out;
   box-shadow: 0 16px 30px rgb(23 31 114 / 20%);
+  padding: 0.5rem;
 
   &:hover,
   &:active,

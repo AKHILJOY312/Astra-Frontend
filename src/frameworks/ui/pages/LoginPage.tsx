@@ -1,63 +1,27 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "../redux/slices/authSlice";
-import type { AppDispatch } from "../redux/store";
-import { Eye, EyeOff, Mail, Lock, AlertCircle, Loader2 } from "lucide-react";
+import type { AppDispatch, RootState } from "../redux/store";
+import { Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import { loginSchema } from "../zod/loginSchema";
 
 export default function LoginPage() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [emailError, setEmailError] = useState("");
-
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+  const { loading } = useSelector((state: RootState) => state.auth);
 
-  const validateEmail = (email: string) => {
-    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return re.test(email);
-  };
-
-  const handleEmailBlur = () => {
-    if (email && !validateEmail(email)) {
-      setEmailError("Please enter a valid email address");
-    } else {
-      setEmailError("");
-    }
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!email || !password) {
-      setError("Please fill in all fields");
-      return;
-    }
-
-    if (!validateEmail(email)) {
-      setEmailError("Please enter a valid email address");
-      return;
-    }
-
-    setError("");
-    setIsLoading(true);
-
+  const handleSubmit = async (
+    values: { email: string; password: string },
+    { setFieldError }: any
+  ) => {
     try {
-      const result = await dispatch(loginUser({ email, password }));
-      if (loginUser.fulfilled.match(result)) {
-        navigate("/project");
-      } else {
-        setError(
-          (result.payload as string) || "Login failed. Please try again."
-        );
-      }
-    } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
-    } finally {
-      setIsLoading(false);
+      await dispatch(loginUser(values)).unwrap();
+      navigate("/project");
+    } catch (err: any) {
+      setFieldError("server", err || "Login failed. Please try again.");
     }
   };
 
@@ -77,127 +41,134 @@ export default function LoginPage() {
 
         {/* Login Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8 backdrop-blur-sm bg-opacity-95">
-          <form onSubmit={handleLogin} className="space-y-5">
-            {/* Error Alert */}
-            {error && (
-              <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
-                <AlertCircle className="w-5 h-5 flex-shrink-0" />
-                <span>{error}</span>
-              </div>
-            )}
+          <Formik
+            initialValues={{ email: "", password: "", server: undefined }}
+            validationSchema={loginSchema}
+            onSubmit={handleSubmit}
+          >
+            {({ errors, touched, isSubmitting }) => (
+              <Form className="space-y-5">
+                {/* Server Error Alert */}
+                {errors.server && (
+                  <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
+                    <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                    <span>{errors.server}</span>
+                  </div>
+                )}
 
-            {/* Email Field */}
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Email Address
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Mail className="h-5 w-5 text-gray-400" />
+                {/* Email Field */}
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      {/* <Mail className="h-5 w-5 text-gray-400" /> */}
+                    </div>
+                    <Field
+                      id="email"
+                      name="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none ${
+                        errors.email && touched.email
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-300 bg-white"
+                      }`}
+                      disabled={loading || isSubmitting}
+                    />
+                  </div>
+                  <ErrorMessage
+                    name="email"
+                    component="p"
+                    className="mt-1 text-sm text-red-600"
+                  />
                 </div>
-                <input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => {
-                    setEmail(e.target.value);
-                    setEmailError("");
-                    setError("");
-                  }}
-                  onBlur={handleEmailBlur}
-                  className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none ${
-                    emailError
-                      ? "border-red-300 bg-red-50"
-                      : "border-gray-300 bg-white"
-                  }`}
-                  disabled={isLoading}
-                  aria-invalid={!!emailError}
-                  aria-describedby={emailError ? "email-error" : undefined}
-                />
-              </div>
-              {emailError && (
-                <p id="email-error" className="mt-1 text-sm text-red-600">
-                  {emailError}
-                </p>
-              )}
-            </div>
 
-            {/* Password Field */}
-            <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Password
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Lock className="h-5 w-5 text-gray-400" />
+                {/* Password Field */}
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Password
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      {/* <Lock className="h-5 w-5 text-gray-400" /> */}
+                    </div>
+                    <Field
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Enter your password"
+                      className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none ${
+                        errors.password && touched.password
+                          ? "border-red-300 bg-red-50"
+                          : "border-gray-300 bg-white"
+                      }`}
+                      disabled={loading || isSubmitting}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
+                    >
+                      {showPassword ? (
+                        <EyeOff className="h-5 w-5" />
+                      ) : (
+                        <Eye className="h-5 w-5" />
+                      )}
+                    </button>
+                  </div>
+                  <ErrorMessage
+                    name="password"
+                    component="p"
+                    className="mt-1 text-sm text-red-600"
+                  />
                 </div>
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    setError("");
-                  }}
-                  className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none"
-                  disabled={isLoading}
-                />
+
+                {/* Remember Me & Forgot Password */}
+                <div className="flex items-center justify-between text-sm">
+                  {/* <label className="flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
+                    />
+                    <span className="ml-2 text-gray-700">Remember me</span> */}
+                  {/* </label> */}
+                  <a
+                    href="/forget-password"
+                    className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                  >
+                    Forgot password?
+                  </a>
+                </div>
+
+                {/* Login Button */}
                 <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
+                  type="submit"
+                  disabled={loading || isSubmitting}
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
-                  {showPassword ? (
-                    <EyeOff className="h-5 w-5" />
+                  {loading || isSubmitting ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Signing in...
+                    </span>
                   ) : (
-                    <Eye className="h-5 w-5" />
+                    "Sign In"
                   )}
                 </button>
-              </div>
-            </div>
-
-            {/* Remember Me & Forgot Password */}
-            <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
-                />
-                <span className="ml-2 text-gray-700">Remember me</span>
-              </label>
-              <a
-                href="#"
-                className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
-              >
-                Forgot password?
-              </a>
-            </div>
-
-            {/* Login Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
-            >
-              {isLoading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Signing in...
-                </span>
-              ) : (
-                "Sign In"
-              )}
-            </button>
-          </form>
+              </Form>
+            )}
+          </Formik>
 
           {/* Divider */}
           <div className="relative my-6">
@@ -253,7 +224,7 @@ export default function LoginPage() {
         <p className="text-center mt-6 text-sm text-gray-600">
           Don't have an account?{" "}
           <a
-            href="#"
+            href="/register"
             className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
           >
             Sign up for free

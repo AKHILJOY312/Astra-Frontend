@@ -7,39 +7,39 @@ import MainLayout from "./layout/MainLayout";
 import AuthLayout from "./layout/AuthLayout";
 import { loadUser } from "./redux/slices/authSlice";
 import type { AppDispatch } from "@/frameworks/ui/redux/store/index";
+import GlobalLoader from "./common/GlobalLoader";
+const pages = import.meta.glob<{ default: React.ComponentType<any> }>(
+  "./pages/**/*.tsx"
+);
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, authLoading } = useSelector(
-    (state: RootState) => state.auth
-  );
-
-  console.log("Auth check:", { isAuthenticated, authLoading });
-
-  if (authLoading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
-      </div>
-    );
-  }
+  const { isAuthenticated } = useSelector((state: RootState) => state.auth);
 
   return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
 };
 
 const App = () => {
   const dispatch = useDispatch<AppDispatch>();
+  useEffect(() => {
+    console.log("Available pages:", Object.keys(pages));
+  }, []);
 
   useEffect(() => {
     dispatch(loadUser());
   }, [dispatch]);
+
   return (
     <BrowserRouter>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={null}>
         <Routes>
           {routes.map((routeItem) => {
-            const LazyComponent = lazy(
-              () => import(`../../frameworks/ui/pages/${routeItem.component}`)
-            );
+            const importPage = pages[`./pages/${routeItem.component}.tsx`];
+
+            if (!importPage) {
+              console.error(`Component not found: ${routeItem.component}`);
+              return null;
+            }
+            const LazyComponent = lazy(importPage);
 
             let element = <LazyComponent />;
 

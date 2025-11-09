@@ -15,7 +15,6 @@ interface AuthState {
   error: string | null;
   message: string | null;
   isAuthenticated: boolean;
-  authLoading: boolean;
 }
 
 const initialState: AuthState = {
@@ -25,7 +24,6 @@ const initialState: AuthState = {
   error: null,
   message: null,
   isAuthenticated: false,
-  authLoading: true,
 };
 
 // const api = axios.create({
@@ -39,14 +37,20 @@ export const loginUser = createAsyncThunk(
     credentials: { email: string; password: string },
     { rejectWithValue }
   ) => {
+    console.log("Attempting login:", credentials);
+
     try {
       const res = await api.post("/auth/login", credentials);
+      console.log("Login success:", res.data);
       return res.data;
     } catch (error: any) {
-      return rejectWithValue(error.response?.data?.message || "Login failed");
+      console.log("Login failed:", error.response?.data);
+      const message = error.response?.data?.message || "Login failed";
+      return rejectWithValue(message);
     }
   }
 );
+
 export const registerUser = createAsyncThunk(
   "auth/register",
   async (
@@ -74,7 +78,7 @@ export const loadUser = createAsyncThunk(
   async (_, { dispatch, rejectWithValue }) => {
     try {
       const res = await api.get("/auth/me");
-      console.log(res.data);
+
       return res.data.user;
     } catch (error: any) {
       // Let interceptor handle 401 → will trigger refresh
@@ -84,6 +88,57 @@ export const loadUser = createAsyncThunk(
     }
   }
 );
+export const logoutUser = createAsyncThunk(
+  "auth/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      await api.post("/auth/logout"); // This clears httpOnly cookie
+      return;
+    } catch (err: any) {
+      // Even if backend fails, we still want to log out locally
+      return rejectWithValue(err.response?.data?.message || "Logout failed");
+    }
+  }
+);
+export const forgotPassword = createAsyncThunk(
+  "auth/forgotPassword",
+  async ({ email }: { email: string }, { rejectWithValue }) => {
+    try {
+      const res = await api.post("/auth/forgot-password", { email });
+      return res.data.message;
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data?.message || "Error occurred");
+    }
+  }
+);
+
+export const resetPassword = createAsyncThunk(
+  "auth/resetPassword",
+  async (
+    { token, password }: { token: string; password: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      //check this for later
+      const res = await api.post(
+        "/auth/reset-password",
+        {
+          password,
+          confirmPassword: password,
+        },
+        {
+          params: { token },
+        }
+      );
+      return res.data;
+    } catch (err: any) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to reset password"
+      );
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -96,12 +151,6 @@ const authSlice = createSlice({
     },
     setAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
-    },
-    logout: (state) => {
-      state.user = null;
-      state.accessToken = null;
-      state.isAuthenticated = false;
-      tokenService.clearToken();
     },
   },
   extraReducers: (builder) => {
@@ -133,23 +182,67 @@ const authSlice = createSlice({
         state.error = action.payload as string;
       })
       .addCase(loadUser.pending, (state) => {
-        state.authLoading = true;
+        state.loading = false;
       })
       .addCase(loadUser.fulfilled, (state, action) => {
         state.user = action.payload;
         state.isAuthenticated = true;
         state.loading = false;
-        state.authLoading = false;
       })
       .addCase(loadUser.rejected, (state) => {
         state.isAuthenticated = false;
         state.user = null;
         state.loading = false;
-        state.authLoading = false;
+      })
+      // LOGOUT
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.user = null;
+        state.accessToken = null;
+        state.isAuthenticated = false;
+        state.loading = false;
+        tokenService.clearToken();
+      })
+      .addCase(logoutUser.rejected, (state) => {
+        // Force logout even if API fails
+        state.user = null;
+        state.accessToken = null;
+        state.isAuthenticated = false;
+        state.loading = false;
+        tokenService.clearToken();
+      })
+      .addCase(forgotPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.message = null;
+      })
+      .addCase(forgotPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload;
+      })
+      .addCase(forgotPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
+      })
+
+      // RESET PASSWORD
+      .addCase(resetPassword.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+        state.message = null;
+      })
+      .addCase(resetPassword.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message || "Password reset successfully";
+      })
+      .addCase(resetPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload as string;
       });
   },
 });
 
-export const { clearError, clearMessage, setAccessToken, logout } =
-  authSlice.actions;
+export const { clearError, clearMessage, setAccessToken } = authSlice.actions;
 export default authSlice.reducer;

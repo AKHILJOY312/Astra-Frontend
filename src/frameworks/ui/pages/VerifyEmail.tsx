@@ -4,6 +4,7 @@ import axios from "axios";
 
 const VerifyEmail: React.FC = () => {
   const [searchParams] = useSearchParams();
+  const type = searchParams.get("type");
   const navigate = useNavigate();
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading"
@@ -22,12 +23,28 @@ const VerifyEmail: React.FC = () => {
     const verifyEmail = async () => {
       try {
         await new Promise((res) => setTimeout(res, 1500));
-        const res = await axios.get(`/api/auth/verify-email?token=${token}`);
-        setStatus("success");
-        setMessage("Email verified successfully!");
+
+        if (type === "reset") {
+          const res = await axios.get(
+            `/api/auth/verify-reset-token?token=${token}`
+          );
+          setStatus("success");
+          setMessage("Reset link verified! Redirecting...");
+        } else {
+          const res = await axios.get(`/api/auth/verify-email?token=${token}`);
+          setStatus("success");
+          setMessage("Email verified successfully!");
+        }
 
         // Redirect after 3 seconds
-        timer = setTimeout(() => navigate("/login"), 3000);
+
+        timer = setTimeout(() => {
+          if (type === "reset") {
+            navigate(`/reset-password?token=${token}`);
+          } else {
+            navigate("/login");
+          }
+        }, 3000);
       } catch (err: any) {
         setStatus("error");
         setMessage(
