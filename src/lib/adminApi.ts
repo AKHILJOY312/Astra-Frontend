@@ -1,49 +1,52 @@
+// src/lib/adminApi.ts
 import axios from "axios";
-import { tokenService } from "./tokenService";
+import { tokenService } from "./tokenService"; // same service, but we'll use admin key
 
-const api = axios.create({
+const ADMIN_TOKEN_KEY = "adminToken"; // different key!
+
+const adminApi = axios.create({
   baseURL: "/api",
   withCredentials: true,
   validateStatus: (status) => status >= 200 && status < 300,
 });
 
-const excludedUrls = [
-  "/",
-  "/auth/login",
-  "/auth/register",
-  "/auth/refresh-token",
-  "/auth/forgot-password",
-  "/auth/verify-reset-token",
-  "/auth/reset-password",
+// Admin-specific public routes (no token needed)
+const adminExcludedUrls = [
+  "/admin/auth/login",
+  "/admin/auth/forgot-password",
+  "/admin/auth/reset-password",
 ];
-// Add token to requests
-api.interceptors.request.use((config) => {
-  const token = tokenService.getToken();
+
+// Add admin token to requests
+adminApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem(ADMIN_TOKEN_KEY);
   if (token) {
     config.headers["Authorization"] = `Bearer ${token}`;
   }
   return config;
 });
 
-// Handle refresh logic safely (no Redux imports)
+// Token refresh queue (same smart logic as user)
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: Array<{
+  resolve: (value: any) => void;
+  reject: (reason?: any) => void;
+}> = [];
 
 const processQueue = (error: any, token: string | null = null) => {
   failedQueue.forEach((prom) => {
-    if (error) prom.reject(error);
-    else prom.resolve(token);
+    error ? prom.reject(error) : prom.resolve(token);
   });
   failedQueue = [];
 };
 
-api.interceptors.response.use(
+adminApi.interceptors.response.use(
   (response) => response,
   async (error) => {
-    console.log("API Error from:", error.config?.url);
     const originalRequest = error.config;
 
-    if (excludedUrls.some((url) => originalRequest.url.includes(url))) {
+    // Skip refresh logic for public admin routes
+    if (adminExcludedUrls.some((url) => originalRequest.url.includes(url))) {
       return Promise.reject(error);
     }
 
@@ -54,7 +57,7 @@ api.interceptors.response.use(
         })
           .then((token) => {
             originalRequest.headers["Authorization"] = `Bearer ${token}`;
-            return api(originalRequest);
+            return adminApi(originalRequest);
           })
           .catch((err) => Promise.reject(err));
       }
@@ -63,19 +66,23 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        const { data } = await api.post(
-          "/auth/refresh-token",
+        // Your backend should have /admin/auth/refresh-token
+        const { data } = await adminApi.post(
+          "/admin/auth/refresh-token",
           {},
           { withCredentials: true }
         );
         const newToken = data.accessToken;
-        tokenService.setToken(newToken);
+
+        localStorage.setItem(ADMIN_TOKEN_KEY, newToken);
         originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
         processQueue(null, newToken);
-        return api(originalRequest);
-      } catch (refreshError) {
+
+        return adminApi(originalRequest);
+      } catch (refreshError: any) {
         processQueue(refreshError, null);
-        tokenService.clearToken();
+        localStorage.removeItem(ADMIN_TOKEN_KEY);
+        window.location.href = "/admin/login"; // redirect to admin login
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -86,4 +93,4 @@ api.interceptors.response.use(
   }
 );
 
-export default api;
+export default adminApi;

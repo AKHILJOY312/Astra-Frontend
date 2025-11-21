@@ -6,6 +6,7 @@ export interface AuthRepository {
   login(credentials: {
     email: string;
     password: string;
+    isAdminLogin?: boolean;
   }): Promise<{ user: User; accessToken: string }>;
   register(data: {
     name: string;

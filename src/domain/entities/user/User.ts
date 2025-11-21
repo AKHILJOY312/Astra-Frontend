@@ -20,6 +20,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
+  isAdmin: boolean;
 }
 export interface AuthState {
   user: User | null;
@@ -28,4 +29,5 @@ export interface AuthState {
   error: string | null;
   message: string | null;
   isAuthenticated: boolean;
+  role: "user" | "admin" | null;
 }

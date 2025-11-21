@@ -72,26 +72,23 @@ export const userRoutes: RouteItem[] = [
 ];
 
 export const adminRoutes: RouteItem[] = [
-  // {
-  //   path: "/admin",
-  //   component: "Dashboard/Home",
-  //   layout: "admin",
-  //   protected: true,
-  // },
+  {
+    path: "/admin/dashboard",
+    component: "Home",
+    layout: "admin",
+    protected: true,
+    filePath: "admin/Dashboard/",
+  },
   // {
   //   path: "/admin/profile",
   //   component: "UserProfiles",
   //   layout: "admin",
   //   protected: true,
   // },
-  // {
-  //   path: "/admin/signin",
-  //   component: "AuthPages/SignIn",
-  //   layout: "auth",
-  // },
-  // {
-  //   path: "/admin/signup",
-  //   component: "AuthPages/SignUp",
-  //   layout: "auth",
-  // },
+  {
+    path: "/admin/login",
+    component: "SignIn",
+    layout: "admin",
+    filePath: "admin/AuthPages/",
+  },
 ];

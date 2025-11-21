@@ -2,8 +2,8 @@
 import "reflect-metadata";
 import { Container } from "inversify";
 
-import { TYPES } from "./types"; // ← identifier
-import type { AuthRepository } from "../application/repo/AuthRepository"; // ← INTERFACE TYPE
+import { TYPES } from "./types";
+import type { AuthRepository } from "../application/repo/AuthRepository";
 import { AuthRepositoryImpl } from "../data/repo/AuthRepositoryImpl";
 
 import {
@@ -13,7 +13,7 @@ import {
   LogoutUseCase,
   ForgotPasswordUseCase,
   ResetPasswordUseCase,
-  VerifyEmailUseCase, // ← ADD THIS
+  VerifyEmailUseCase,
 } from "../application/use-cases/auth";
 
 const container = new Container();
@@ -31,6 +31,6 @@ container.bind(LoadUserUseCase).toSelf().inTransientScope();
 container.bind(LogoutUseCase).toSelf().inTransientScope();
 container.bind(ForgotPasswordUseCase).toSelf().inTransientScope();
 container.bind(ResetPasswordUseCase).toSelf().inTransientScope();
-container.bind(VerifyEmailUseCase).toSelf().inTransientScope(); // ← ADD THIS
+container.bind(VerifyEmailUseCase).toSelf().inTransientScope();
 
 export { container, TYPES };

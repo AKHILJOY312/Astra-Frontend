@@ -6,8 +6,13 @@ import { userResponseToEntity } from "../mappers/userMapper";
 import type { VerifyEmailResponse } from "@/domain/types/auth.types";
 
 export class AuthRepositoryImpl implements AuthRepository {
-  async login(credentials: { email: string; password: string }) {
+  async login(credentials: {
+    email: string;
+    password: string;
+    isAdminLogin?: boolean;
+  }) {
     const { data } = await authApi.login(credentials);
+
     return {
       user: userResponseToEntity(data.user),
       accessToken: data.accessToken,
@@ -21,6 +26,7 @@ export class AuthRepositoryImpl implements AuthRepository {
 
   async loadUser(): Promise<User> {
     const { data } = await authApi.loadMe();
+    console.log(data);
     return userResponseToEntity(data.user);
   }
 

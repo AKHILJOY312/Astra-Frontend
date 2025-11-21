@@ -19,6 +19,7 @@ const initialState: AuthState = {
   error: null,
   message: null,
   isAuthenticated: false,
+  role: null,
 };
 
 const authSlice = createSlice({
@@ -33,6 +34,9 @@ const authSlice = createSlice({
     },
     setAccessToken: (state, action: PayloadAction<string>) => {
       state.accessToken = action.payload;
+    },
+    setRole: (state, action: PayloadAction<"user" | "admin" | null>) => {
+      state.role = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -57,6 +61,7 @@ const authSlice = createSlice({
         state.accessToken = action.payload.accessToken;
         state.user = action.payload.user;
         state.isAuthenticated = true;
+        state.role = action.payload.user.isAdmin ? "admin" : "user";
         tokenService.setToken(action.payload.accessToken);
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -70,6 +75,7 @@ const authSlice = createSlice({
         state.user = action.payload;
         state.isAuthenticated = true;
         state.loading = false;
+        state.role = action.payload.isAdmin ? "admin" : "user";
       })
       .addCase(loadUser.rejected, (state) => {
         state.isAuthenticated = false;

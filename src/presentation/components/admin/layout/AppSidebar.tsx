@@ -14,8 +14,8 @@ import {
   PlugInIcon,
   TableIcon,
   UserCircleIcon,
-} from "../../icons";
-import { useSidebar } from "@/frameworks/ui/context/SidebarContext";
+} from "../icons/index";
+import { useSidebar } from "@/presentation/context/SidebarContext";
 
 type NavItem = {
   name: string;

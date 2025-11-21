@@ -13,6 +13,7 @@ export class LoginUseCase {
   async execute(credentials: {
     email: string;
     password: string;
+    isAdminLogin?: boolean;
   }): Promise<{ user: User; accessToken: string }> {
     // Optional: add validation, logging, etc.
     return this.repo.login(credentials);

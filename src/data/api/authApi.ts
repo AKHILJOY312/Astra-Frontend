@@ -1,8 +1,19 @@
 // src/data/api/authApi.ts
 import api from "../../lib/apicaller";
 
-export const login = (credentials: { email: string; password: string }) =>
-  api.post("/auth/login", credentials);
+export const login = (credentials: {
+  email: string;
+  password: string;
+  isAdminLogin?: boolean;
+}) => {
+  const endpoint = credentials.isAdminLogin
+    ? "/admin/auth/login"
+    : "/auth/login";
+
+  const { isAdminLogin, ...payload } = credentials;
+
+  return api.post(endpoint, payload);
+};
 
 export const register = (data: any) => api.post("/auth/register", data);
 

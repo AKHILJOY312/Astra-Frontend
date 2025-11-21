@@ -5,4 +5,5 @@ export const userResponseToEntity = (raw: any): User => ({
   id: raw.id,
   name: raw.name,
   email: raw.email,
+  isAdmin: raw.isAdmin,
 });

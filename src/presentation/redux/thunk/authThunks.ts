@@ -23,7 +23,7 @@ const verifyUC = container.get(VerifyEmailUseCase);
 export const loginUser = createAsyncThunk(
   "auth/login",
   async (
-    credentials: { email: string; password: string },
+    credentials: { email: string; password: string; isAdminLogin?: boolean },
     { rejectWithValue }
   ) => {
     try {
@@ -34,7 +34,6 @@ export const loginUser = createAsyncThunk(
   }
 );
 
-// repeat for the other 5 actions – just change the UC and payload shape
 export const loadUser = createAsyncThunk(
   "auth/loadUser",
   async (_, { rejectWithValue }) => {

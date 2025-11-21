@@ -8,4 +8,10 @@ export const tokenService = {
   clearToken: () => {
     accessToken = null;
   },
+
+  //for admin
+  // Admin-specific
+  getAdminToken: () => localStorage.getItem("adminToken"),
+  setAdminToken: (token: string) => localStorage.setItem("adminToken", token),
+  clearAdminToken: () => localStorage.removeItem("adminToken"),
 };
