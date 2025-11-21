@@ -1,7 +1,7 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { tokenService } from "../../../lib/tokenService";
-import type { User, AuthState } from "@/domain/entities/user/User";
+import type { AuthState } from "@/domain/entities/user/User";
 import {
   loginUser,
   registerUser,

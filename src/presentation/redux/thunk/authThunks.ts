@@ -125,7 +125,7 @@ export const verifyEmail = createAsyncThunk(
 
 export const loginSuccess = createAsyncThunk(
   "auth/loginSuccess",
-  async (data: { token: string }, { dispatch }) => {
+  async (data: { token: string }) => {
     tokenService.setToken(data.token);
 
     return { token: data.token };

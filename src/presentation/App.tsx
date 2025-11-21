@@ -44,7 +44,7 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const AdminProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, user, loading, role } = useAppSelector(
+  const { isAuthenticated, loading, role } = useAppSelector(
     (state) => state.auth
   );
   const navigate = useNavigate();
@@ -78,7 +78,6 @@ const AdminProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
 export default function App() {
   const dispatch = useDispatch<AppDispatch>();
-  const { isAuthenticated } = useAppSelector((s) => s.auth);
 
   useEffect(() => {
     dispatch(loadUser());
