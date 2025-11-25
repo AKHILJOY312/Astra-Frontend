@@ -8,7 +8,6 @@ const api = axios.create({
 });
 
 const excludedUrls = [
-  "/",
   "/auth/login",
   "/auth/register",
   "/auth/refresh-token",

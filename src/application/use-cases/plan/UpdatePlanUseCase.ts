@@ -13,7 +13,7 @@ export interface UpdatePlanInput {
   billingCycle?: "monthly" | "yearly";
   features?: string[];
   maxProjects?: number;
-  maxStorage?: number;
+  maxMembersPerProject?: number;
   isActive?: boolean;
 }
 @injectable()

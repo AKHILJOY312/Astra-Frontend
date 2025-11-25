@@ -128,7 +128,9 @@ export default function PlanDetailModal({ plan, open, onClose }: Props) {
               </p>
               <p>
                 Max Storage:{" "}
-                {plan.maxStorage === 0 ? "Unlimited" : `${plan.maxStorage} GB`}
+                {plan.maxMembersPerProject === 0
+                  ? "Unlimited"
+                  : `${plan.maxMembersPerProject} No`}
               </p>
             </div>
           </div>

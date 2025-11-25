@@ -49,7 +49,9 @@ export default function PlanCard({ plan }: { plan: Plan }) {
           </span>
           <span>
             Storage:{" "}
-            {plan.maxStorage === 0 ? "Unlimited" : `${plan.maxStorage} GB`}
+            {plan.maxMembersPerProject === 0
+              ? "Unlimited"
+              : `${plan.maxMembersPerProject} No`}
           </span>
         </div>
 

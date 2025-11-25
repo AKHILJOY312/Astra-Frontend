@@ -60,7 +60,7 @@ const planSchema = Yup.object()
       .min(1, "At least one feature is required")
       .required("Features are required"),
     maxProjects: Yup.number().min(0).required(),
-    maxStorage: Yup.number().min(0).required(),
+    maxMembersPerProject: Yup.number().min(5).required(),
     isActive: Yup.boolean().default(true),
   })
   .required();
@@ -74,7 +74,7 @@ type FormValues = {
   billingCycle: "monthly" | "yearly";
   features: string[];
   maxProjects: number;
-  maxStorage: number;
+  maxMembersPerProject: number;
   isActive: boolean;
 };
 
@@ -91,7 +91,7 @@ export default function PlanFormDialog({ plan, open, onClose }: Props) {
     billingCycle: plan?.billingCycle || "monthly",
     features: plan?.features && plan.features.length > 0 ? plan.features : [""],
     maxProjects: plan?.maxProjects || 0,
-    maxStorage: plan?.maxStorage || 0,
+    maxMembersPerProject: plan?.maxMembersPerProject || 0,
     isActive: plan?.isActive ?? true,
   };
 
@@ -299,8 +299,8 @@ export default function PlanFormDialog({ plan, open, onClose }: Props) {
                   <Field as={Input} type="number" name="maxProjects" />
                 </div>
                 <div>
-                  <Label>Max Storage (GB, 0 = Unlimited)</Label>
-                  <Field as={Input} type="number" name="maxStorage" />
+                  <Label>Max Storage (NO, 0 = Unlimited)</Label>
+                  <Field as={Input} type="number" name="maxMembersPerProject" />
                 </div>
               </div>
 
