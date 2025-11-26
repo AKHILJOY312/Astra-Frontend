@@ -21,7 +21,7 @@ export default function LoginPage() {
   ) => {
     try {
       await dispatch(loginUser(values)).unwrap();
-      navigate("/project");
+      navigate("/projects");
     } catch (err: any) {
       setFieldError("server", err || "Login failed. Please try again.");
     }

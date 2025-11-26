@@ -58,7 +58,7 @@ export const userRoutes: RouteItem[] = [
   },
 
   {
-    path: "/projects/:id",
+    path: "/projects/:projectId",
     component: "ProjectDetail",
     exact: true,
     protected: true,

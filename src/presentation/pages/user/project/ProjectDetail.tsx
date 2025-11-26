@@ -12,7 +12,6 @@ export default function ProjectDetail() {
   const { projectId } = useParams<{ projectId: string }>();
   const dispatch = useDispatch();
   const { projects } = useProjects();
-
   useEffect(() => {
     if (projectId) {
       const project = projects.find((p) => p.id === projectId);

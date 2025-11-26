@@ -25,6 +25,7 @@ export default function InviteMemberModal() {
 
   const handleInvite = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(currentProject);
     if (!currentProject || !email.trim()) return;
 
     setLoading(true);

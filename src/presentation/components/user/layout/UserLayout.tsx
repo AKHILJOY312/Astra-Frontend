@@ -4,6 +4,7 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../common/Sidebar";
 import UpgradePlanModal from "../common/UpgradePlanModal";
 import { PlanLimitBanner } from "../common/PlanLimitBanner";
+import InviteMemberModal from "../common/InviteMemberModal";
 
 export default function UserLayout({
   children,
@@ -23,6 +24,7 @@ export default function UserLayout({
       {children}
       <UpgradePlanModal></UpgradePlanModal>
       <PlanLimitBanner></PlanLimitBanner>
+      <InviteMemberModal></InviteMemberModal>
     </div>
   );
 }
