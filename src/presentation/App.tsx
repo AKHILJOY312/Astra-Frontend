@@ -35,7 +35,11 @@ const safeLazy = (importer: () => Promise<any>) => {
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
   const { isAuthenticated } = useAppSelector((s) => s.auth);
-  return isAuthenticated ? <Navigate to="/project" replace /> : <>{children}</>;
+  return isAuthenticated ? (
+    <Navigate to="/projects" replace />
+  ) : (
+    <>{children}</>
+  );
 };
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -121,6 +125,9 @@ export default function App() {
                 break;
               case "app":
                 element = <UserLayout>{element}</UserLayout>;
+                break;
+              default:
+                element = element;
                 break;
             }
 

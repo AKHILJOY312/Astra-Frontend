@@ -49,7 +49,7 @@ const Header = () => {
       {isAuthenticated ? (
         <>
           <div className="flex items-center gap-4 ml-6">
-            <Button onClick={() => navigate("/project")}>Project</Button>
+            <Button onClick={() => navigate("/projects")}>Project</Button>
           </div>
         </>
       ) : (
@@ -71,7 +71,7 @@ const Header = () => {
         <Row justify="space-between" align="middle">
           {/* Logo */}
           <a href="/" aria-label="homepage" className="flex items-center">
-            <SvgIcon src="untitled1.svg" width="50px" height="50px" /> Astra
+            <SvgIcon src="logo.svg" width="50px" height="50px" /> Astra
           </a>
 
           {/* Desktop Menu */}

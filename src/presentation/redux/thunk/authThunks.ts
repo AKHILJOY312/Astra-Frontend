@@ -1,6 +1,7 @@
 // src/presentation/redux/thunks/authThunks.ts
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { container } from "../../../di/container";
+import { container, TYPES } from "../../../di/container";
+
 import {
   LoginUseCase,
   RegisterUseCase,
@@ -12,13 +13,15 @@ import {
 } from "../../../application/use-cases/auth/index";
 import { tokenService } from "@/lib/tokenService";
 // Resolve once (singleton)
-const loginUC = container.get(LoginUseCase);
-const registerUC = container.get(RegisterUseCase);
-const loadUserUC = container.get(LoadUserUseCase);
-const logoutUC = container.get(LogoutUseCase);
-const forgotUC = container.get(ForgotPasswordUseCase);
-const resetUC = container.get(ResetPasswordUseCase);
-const verifyUC = container.get(VerifyEmailUseCase);
+const loginUC = container.get<LoginUseCase>(TYPES.LoginUseCase);
+const registerUC = container.get<RegisterUseCase>(TYPES.RegisterUseCase);
+const loadUserUC = container.get<LoadUserUseCase>(TYPES.LoadUserUseCase);
+const logoutUC = container.get<LogoutUseCase>(TYPES.LogoutUseCase);
+const forgotUC = container.get<ForgotPasswordUseCase>(
+  TYPES.ForgotPasswordUseCase
+);
+const resetUC = container.get<ResetPasswordUseCase>(TYPES.ResetPasswordUseCase);
+const verifyUC = container.get<VerifyEmailUseCase>(TYPES.VerifyEmailUseCase);
 
 export const loginUser = createAsyncThunk(
   "auth/login",

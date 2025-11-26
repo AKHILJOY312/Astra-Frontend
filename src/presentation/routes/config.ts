@@ -43,8 +43,8 @@ export const userRoutes: RouteItem[] = [
     filePath: "user/auth/",
   },
   {
-    path: "/project",
-    component: "ProjectPage",
+    path: "/projects",
+    component: "Dashboard",
     exact: true,
     protected: true,
     layout: "app",
@@ -57,12 +57,35 @@ export const userRoutes: RouteItem[] = [
     filePath: "user/auth/",
   },
 
-  //  // {
-  //   path: '/projects/:id',
-  //   component: 'ProjectPage',
-  //   exact: true,
-  //   protected: true,
-  // },
+  {
+    path: "/projects/:id",
+    component: "ProjectDetail",
+    exact: true,
+    protected: true,
+    layout: "app",
+    filePath: "user/project/",
+  },
+  {
+    path: "/upgrade",
+    component: "UpgradePlanPage",
+    layout: "main",
+    protected: true,
+    filePath: "user/upgrade/",
+  },
+  {
+    path: "/payment/success",
+    component: "PaymentSuccess",
+    layout: "main",
+    protected: true,
+    filePath: "user/upgrade/",
+  },
+  {
+    path: "/payment/failed",
+    component: "PaymentFailed",
+    layout: "main",
+    protected: true,
+    filePath: "user/upgrade/",
+  },
   // {
   //   path: '/',
   //   component: 'Dashboard',

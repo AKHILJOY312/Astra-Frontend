@@ -1,30 +1,55 @@
-// src/data/repo/PlanRepositoryImpl.ts
-import apiCaller from "@/lib/apicaller";
 import type { Plan } from "@/domain/entities/plan/Plan";
 import type { PlanRepository } from "@/application/repo/PlanRepository";
+import * as planApi from "../api/planApi";
+import { planResponseToEntity } from "../mappers/planMapper";
 
 export class PlanRepositoryImpl implements PlanRepository {
   async getPlans(page: number, limit: number) {
-    const res = await apiCaller.get("/admin/plans", {
-      params: { page, limit },
-    });
+    const { data } = await planApi.getPlans(page, limit);
 
-    // ADD THIS LINE — fixes everything
-    return { data: res.data.plans as Plan[], total: res.data.total };
+    return {
+      data: data.plans.map(planResponseToEntity),
+      total: data.total,
+    };
   }
 
-  async createPlan(plan: Partial<Plan>) {
-    const res = await apiCaller.post("/admin/plans", plan);
-    return res.data;
+  async createPlan(plan: Partial<Plan>): Promise<Plan> {
+    const { data } = await planApi.createPlan(plan);
+    return planResponseToEntity(data.plan);
   }
 
-  async updatePlan(id: string, plan: Partial<Plan>) {
-    const res = await apiCaller.put(`/admin/plans/${id}`, plan);
-    return res.data;
+  async updatePlan(id: string, plan: Partial<Plan>): Promise<Plan> {
+    const { data } = await planApi.updatePlan(id, plan);
+    return planResponseToEntity(data.plan);
   }
 
-  async deletePlan(id: string) {
-    console.log("*id:" + id);
-    await apiCaller.delete(`/admin/plans/${id}`);
+  async deletePlan(id: string): Promise<void> {
+    await planApi.deletePlan(id);
+  }
+
+  // ========== USER SIDE ==========
+
+  async getAllActivePlans(): Promise<Plan[]> {
+    const { data } = await planApi.getAvailablePlans();
+    return data.plans.map(planResponseToEntity);
+  }
+
+  async getPlanById(planId: string): Promise<Plan | null> {
+    const plans = await this.getAllActivePlans();
+    return plans.find((p) => p.id === planId) || null;
+  }
+
+  async getCurrentPlan(): Promise<Plan | null> {
+    const { data } = await planApi.getCurrentPlan();
+    return data.currentPlan ? planResponseToEntity(data.currentPlan) : null;
+  }
+
+  async upgradeToPlan(planId: string): Promise<void> {
+    await planApi.upgradePlan(planId);
+  }
+
+  async getLimits() {
+    const { data } = await planApi.getLimits();
+    return data.limits;
   }
 }

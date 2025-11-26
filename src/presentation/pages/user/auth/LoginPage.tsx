@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { loginUser } from "@/presentation/redux/thunk/authThunks";
 import type { AppDispatch, RootState } from "@/presentation/redux/store/store";
-import { Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react";
+import { Eye, EyeOff, AlertCircle, Loader2, Lock, Mail } from "lucide-react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { loginSchema } from "@/presentation/yup/loginSchema";
 
@@ -68,7 +68,7 @@ export default function LoginPage() {
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      {/* <Mail className="h-5 w-5 text-gray-400" /> */}
+                      <Mail className="h-5 w-5 text-gray-400" />
                     </div>
                     <Field
                       id="email"
@@ -101,7 +101,7 @@ export default function LoginPage() {
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      {/* <Lock className="h-5 w-5 text-gray-400" /> */}
+                      <Lock className="h-5 w-5 text-gray-400" />
                     </div>
                     <Field
                       id="password"

@@ -1,8 +1,6 @@
-// src/components/user/ControllerBar.tsx
-"use client";
+// components/ControllerBar.tsx (Updated)
 
 import { useState, useRef, useEffect } from "react";
-
 import {
   MessageCircle,
   Circle,
@@ -12,12 +10,19 @@ import {
   LogOut,
   User as UserIcon,
   Sparkles,
+  LayoutDashboard, // Use a better icon for Dashboard
+  Calendar, // Use a better icon for Schedule
+  ListChecks, // Use a better icon for Tasks
 } from "lucide-react";
 
 import { useDispatch } from "react-redux";
 import { logoutUser } from "@/presentation/redux/thunk/authThunks";
 import type { AppDispatch } from "@/presentation/redux/store/store";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "@/presentation/redux/hooks"; // Import the custom selector hook
+
+// --- Constants ---
+const DEFAULT_PROFILE_IMAGE = "/images/user/DummyUser.jpg";
 
 export default function ControllerBar() {
   const [activeTab, setActiveTab] = useState(0);
@@ -25,6 +30,13 @@ export default function ControllerBar() {
   const menuRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
+
+  // 1. Dynamic User Data from Redux State
+  const user = useAppSelector((state) => state.auth.user);
+
+  // 2. Determine Profile Image URL with Default Fallback
+  const profileImageUrl = user?.profileImage || DEFAULT_PROFILE_IMAGE;
+  const userName = user?.name || user?.email || "Guest";
 
   // close when clicking outside
   useEffect(() => {
@@ -37,13 +49,38 @@ export default function ControllerBar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Updated navigation items with better icons and structure
   const navItems = [
-    { label: "Chats", icon: <MessageCircle className="w-6 h-6" /> },
-    { label: "Status", icon: <Circle className="w-6 h-6" /> },
-    { label: "Channels", icon: <Radio className="w-6 h-6" /> },
-    { label: "Communities", icon: <Users className="w-8 h-8" /> },
-
-    { label: "Settings", icon: <Settings className="w-6 h-6" /> },
+    {
+      label: "Dashboard",
+      icon: <LayoutDashboard className="w-6 h-6" />,
+      route: "/dashboard",
+    },
+    {
+      label: "Projects",
+      icon: <Circle className="w-6 h-6" />,
+      route: "/projects",
+    },
+    {
+      label: "Schedule",
+      icon: <Calendar className="w-6 h-6" />,
+      route: "/schedule",
+    },
+    {
+      label: "Tasks",
+      icon: <ListChecks className="w-6 h-6" />,
+      route: "/tasks",
+    },
+    {
+      label: "Settings",
+      icon: <Settings className="w-6 h-6" />,
+      route: "/settings",
+    },
+    {
+      label: "AI Helper",
+      icon: <Sparkles className="w-6 h-6" />,
+      route: "/ai",
+    },
   ];
 
   const handleLogout = async () => {
@@ -51,73 +88,127 @@ export default function ControllerBar() {
     navigate("/login");
   };
 
+  const handleNavClick = (idx: number, route: string) => {
+    setActiveTab(idx);
+    navigate(route);
+  };
+
   const profileMenuItems = [
     {
-      label: "Profile",
+      label: "View Profile",
       icon: <UserIcon className="w-5 h-5" />,
-      onClick: () => alert("Profile"),
-    },
-    {
-      label: "Settings",
-      icon: <Settings className="w-5 h-5" />,
-      onClick: () => alert("Settings"),
+      onClick: () => navigate("/profile"), // Assuming a profile route
     },
     {
       label: "Logout",
       icon: <LogOut className="w-5 h-5" />,
-      onClick: () => handleLogout(),
+      onClick: handleLogout,
+      isDanger: true,
+    },
+    {
+      label: "Account Settings",
+      icon: <Settings className="w-5 h-5" />,
+      onClick: () => navigate("/settings"), // Or a separate account settings route
     },
   ];
 
   return (
-    <div className="fixed left-0 top-0 h-screen w-20 bg-gray-50 border-r border-gray-200 flex flex-col items-center py-4 gap-6 z-50">
-      {/* ───── Top icons ───── */}
-      <div className="flex flex-col gap-4">
-        {navItems.map((item, idx) => (
-          <button
-            key={idx}
-            aria-label={item.label}
-            aria-pressed={activeTab === idx}
-            onClick={() => setActiveTab(idx)}
-            className={`p-3 rounded-xl transition-all ${
-              activeTab === idx
-                ? "bg-blue-100 text-blue-600"
-                : "text-gray-600 hover:bg-gray-200"
-            }`}
-          >
-            {item.icon}
-          </button>
-        ))}
+    // 3. UI/UX Improvement: Smoother, more contrasting background and shadow
+    <div className="fixed left-0 top-0 h-screen w-20 bg-white shadow-xl flex flex-col items-center py-6 gap-6 z-50 transition-all duration-300">
+      {/* ───── App Logo / Icon Placeholder ───── */}
+      <div className="text-2xl font-bold text-blue-600 mb-4">
+        <img
+          src="/img/svg/logo.svg"
+          alt="App Logo"
+          className="w-8 h-8"
+          width={32}
+          height={32}
+        />
+        {/* Using an icon as a logo placeholder */}
       </div>
 
-      <hr className="w-10 border-t border-gray-300" />
+      {/* ───── Navigation Icons ───── */}
+      <nav className="flex flex-col gap-3 flex-grow">
+        {navItems.map((item, idx) => (
+          // 3. UI/UX Improvement: Hover for Label (Tooltip-like functionality)
+          <div key={idx} className="relative group">
+            <button
+              aria-label={item.label}
+              aria-current={activeTab === idx ? "page" : undefined}
+              onClick={() => handleNavClick(idx, item.route)}
+              className={`
+                p-3 rounded-xl transition-all duration-200 ease-in-out
+                flex items-center justify-center relative
+                ${
+                  activeTab === idx
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-200" // Stronger active state
+                    : "text-gray-500 hover:bg-gray-100 hover:text-blue-600"
+                }
+              `}
+            >
+              {item.icon}
+            </button>
+            {/* Tooltip Label */}
+            <span
+              className="absolute left-full ml-3 top-1/2 -translate-y-1/2 
+                           bg-gray-800 text-white text-xs font-medium 
+                           px-3 py-1 rounded-md opacity-0 pointer-events-none
+                           group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap z-50"
+            >
+              {item.label}
+            </span>
+          </div>
+        ))}
+      </nav>
+
+      <hr className="w-10 border-t border-gray-200" />
 
       {/* ───── Profile button + pop‑up ───── */}
       <div className="mt-auto relative" ref={menuRef}>
         {/* Profile button */}
         <button
-          aria-label="Profile"
+          aria-label="Toggle Profile Menu"
           onClick={() => setShowProfileMenu((v) => !v)}
-          className={`p-3 rounded-xl transition-all ${
-            showProfileMenu
-              ? "bg-blue-100 text-blue-600"
-              : "text-gray-600 hover:bg-gray-200"
-          }`}
+          className={`
+            p-1.5 rounded-full transition-all duration-200
+            ${
+              showProfileMenu
+                ? "ring-4 ring-blue-300"
+                : "hover:ring-2 hover:ring-gray-300"
+            }
+          `}
         >
-          <div className="w-8 h-8 rounded-full overflow-hidden border-2 border-gray-300">
+          {/* 1 & 2. Dynamic Image with Default Fallback */}
+          <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white bg-gray-200 shadow-md">
             <img
-              src="https://media-maa2-1.cdn.whatsapp.net/v/t61.24694-24/473399454_1321697788817944_4997064142698727504_n.jpg?stp=dst-jpg_s96x96_tt6&ccb=11-4&oh=01_Q5Aa3AHpnHgGoKmZ2Z8xiOiq47yOE641BNkvf9VveID5Y72cFQ&oe=691FD351&_nc_sid=5e03e0&_nc_cat=101"
-              alt="Profile"
-              width={32}
-              height={32}
+              src={profileImageUrl}
+              alt={`${userName}'s Profile`}
+              width={40}
+              height={40}
+              // Add a simple error handler for missing/broken images
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.onerror = null; // prevents infinite loop
+                target.src = DEFAULT_PROFILE_IMAGE;
+              }}
               className="w-full h-full object-cover"
             />
           </div>
         </button>
 
-        {/* Pop‑up menu – sticks to the right of the button */}
+        {/* Pop‑up menu - 3. UI/UX Improvement: Better design and placement */}
         {showProfileMenu && (
-          <div className="absolute left-full top-1/2 -translate-y-1/2 ml-2 w-56 bg-white rounded-lg shadow-xl border border-gray-200 z-50">
+          <div className="absolute left-full bottom-1/2 translate-y-1/2 ml-3 w-60 bg-white rounded-xl shadow-2xl border border-gray-100 z-50 overflow-hidden">
+            {/* Header with User Info */}
+            <div className="p-4 border-b border-gray-100 bg-blue-50/50">
+              <p className="text-base font-semibold text-gray-800 truncate">
+                {userName}
+              </p>
+              {user?.email && (
+                <p className="text-xs text-gray-500 truncate">{user.email}</p>
+              )}
+            </div>
+
             <div className="p-2">
               {profileMenuItems.map((item, i) => (
                 <button
@@ -126,7 +217,12 @@ export default function ControllerBar() {
                     item.onClick();
                     setShowProfileMenu(false);
                   }}
-                  className="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-gray-100 text-left text-sm text-gray-800"
+                  className={`w-full flex items-center gap-3 px-3 py-2 rounded-lg text-left text-sm transition-colors duration-150
+                    ${
+                      item.isDanger
+                        ? "text-red-600 hover:bg-red-50"
+                        : "text-gray-700 hover:bg-blue-50 hover:text-blue-700"
+                    }`}
                 >
                   {item.icon}
                   <span>{item.label}</span>
