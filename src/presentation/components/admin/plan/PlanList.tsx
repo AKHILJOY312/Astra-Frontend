@@ -4,7 +4,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
 import { useEffect } from "react";
-import { container } from "@/di/container";
+import { container, TYPES } from "@/di/container";
 import { GetPlansUseCase } from "@/application/use-cases/plan";
 import type { Plan } from "@/domain/entities/plan/Plan";
 import PlanCard from "./PlanCard";
@@ -12,7 +12,7 @@ import PlanDetailModal from "./PlanDetailModal";
 import { useState } from "react";
 import { Package } from "lucide-react";
 
-const getPlansUseCase = container.get(GetPlansUseCase);
+const getPlansUseCase = container.get<GetPlansUseCase>(TYPES.GetPlansUseCase);
 
 export default function PlanList() {
   const [selectedPlan, setSelectedPlan] = useState<Plan | null>(null);

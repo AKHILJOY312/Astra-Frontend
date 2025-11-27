@@ -15,12 +15,12 @@ export class PlanRepositoryImpl implements PlanRepository {
 
   async createPlan(plan: Partial<Plan>): Promise<Plan> {
     const { data } = await planApi.createPlan(plan);
-    return planResponseToEntity(data.plan);
+    return planResponseToEntity(data);
   }
 
   async updatePlan(id: string, plan: Partial<Plan>): Promise<Plan> {
     const { data } = await planApi.updatePlan(id, plan);
-    return planResponseToEntity(data.plan);
+    return planResponseToEntity(data);
   }
 
   async deletePlan(id: string): Promise<void> {

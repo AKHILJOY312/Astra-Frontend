@@ -13,12 +13,13 @@ import { Edit, Trash2, AlertCircle } from "lucide-react";
 import type { Plan } from "@/domain/entities/plan/Plan";
 import PlanFormDialog from "./PlanFormDialog";
 import { useState } from "react";
-import { container } from "@/di/container";
+import { container, TYPES } from "@/di/container";
 import { DeletePlanUseCase } from "@/application/use-cases/plan";
 import { useQueryClient } from "@tanstack/react-query";
 
-// CORRECT WAY: Use class as identifier (not string!)
-const deletePlanUseCase = container.get(DeletePlanUseCase);
+const deletePlanUseCase = container.get<DeletePlanUseCase>(
+  TYPES.DeletePlanUseCase
+);
 
 interface Props {
   plan: Plan;
@@ -127,7 +128,7 @@ export default function PlanDetailModal({ plan, open, onClose }: Props) {
                 {plan.maxProjects === 0 ? "Unlimited" : plan.maxProjects}
               </p>
               <p>
-                Max Storage:{" "}
+                Max Members:{" "}
                 {plan.maxMembersPerProject === 0
                   ? "Unlimited"
                   : `${plan.maxMembersPerProject} No`}

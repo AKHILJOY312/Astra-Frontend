@@ -14,7 +14,7 @@ export default function AuthSuccess() {
     const token = searchParams.get("token");
     if (token) {
       dispatch(loginSuccess({ token }));
-      navigate("/project", { replace: true });
+      navigate("/projects", { replace: true });
     } else {
       navigate("/login");
     }

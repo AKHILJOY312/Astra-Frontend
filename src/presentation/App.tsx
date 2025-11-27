@@ -17,6 +17,12 @@ import AppLayout from "@/presentation/components/admin/layout/AppLayout";
 import NotFound from "@/presentation/components/user/common/NotFound";
 import { userRoutes, adminRoutes } from "@/presentation/routes/config";
 import { useAppSelector } from "./redux/hooks";
+import {
+  AdminProtectedRoute,
+  AdminPublicRoute,
+  ProtectedRoute,
+  PublicRoute,
+} from "./routes/RouteGuards";
 
 const pages = import.meta.glob("./pages/**/*.tsx");
 
@@ -31,51 +37,6 @@ const safeLazy = (importer: () => Promise<any>) => {
       return { default: Component };
     })
   );
-};
-
-const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAppSelector((s) => s.auth);
-  return isAuthenticated ? (
-    <Navigate to="/projects" replace />
-  ) : (
-    <>{children}</>
-  );
-};
-
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated } = useAppSelector((s) => s.auth);
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
-};
-
-const AdminProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, loading, role } = useAppSelector(
-    (state) => state.auth
-  );
-
-  // Optional: Show loading while checking
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-xl">Loading admin access...</div>
-      </div>
-    );
-  }
-
-  // Main check: must be logged in AND have isAdmin: true
-  const isAdmin = isAuthenticated && role === "admin";
-
-  // useEffect(() => {
-  //   if (!isAdmin) {
-  //     navigate("/admin/login", { replace: true });
-  //   }
-  // }, [isAdmin, navigate]);
-
-  // If not admin → redirect immediately
-  if (!isAdmin) {
-    return <Navigate to="/admin/login" replace />;
-  }
-
-  return <>{children}</>;
 };
 
 export default function App() {
@@ -164,7 +125,7 @@ export default function App() {
               })}
           </Route>
 
-          {/* Admin Sign In (outside layout) */}
+          {/* Admin Sign in (outside layout) */}
           {adminRoutes
             .filter((r) => r.path === "/admin/login")
             .map((r) => {
@@ -174,7 +135,15 @@ export default function App() {
 
               const LazyComponent = safeLazy(importPage);
               return (
-                <Route key={r.path} path={r.path} element={<LazyComponent />} />
+                <Route
+                  key={r.path}
+                  path={r.path}
+                  element={
+                    <AdminPublicRoute>
+                      <LazyComponent />
+                    </AdminPublicRoute>
+                  }
+                />
               );
             })}
 

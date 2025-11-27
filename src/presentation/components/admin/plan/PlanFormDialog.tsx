@@ -22,15 +22,19 @@ import {
 } from "@/presentation/components/admin/ui/select";
 import { X, Plus } from "lucide-react";
 import type { Plan } from "@/domain/entities/plan/Plan";
-import { container } from "@/di/container";
+import { container, TYPES } from "@/di/container";
 import {
   CreatePlanUseCase,
   UpdatePlanUseCase,
 } from "@/application/use-cases/plan";
 import { useQueryClient } from "@tanstack/react-query";
 
-const createPlanUseCase = container.get(CreatePlanUseCase);
-const updatePlanUseCase = container.get(UpdatePlanUseCase);
+const createPlanUseCase = container.get<CreatePlanUseCase>(
+  TYPES.CreatePlanUseCase
+);
+const updatePlanUseCase = container.get<UpdatePlanUseCase>(
+  TYPES.UpdatePlanUseCase
+);
 
 interface Props {
   plan?: Plan | null;
@@ -43,25 +47,53 @@ interface Props {
 // ──────────────────────────────────────────────────────────────
 const planSchema = Yup.object()
   .shape({
-    name: Yup.string().required("Plan name is required"),
-    description: Yup.string().required("Description is required"),
-    price: Yup.number().min(0, "Price must be positive").required(),
+    name: Yup.string()
+      .trim()
+      .min(3, "Name must be at least 3 characters")
+      .max(50, "Name is too long")
+      .required("Name is required"),
+
+    description: Yup.string()
+      .trim()
+      .min(5, "Description must be at least 5 characters")
+      .required("Description is required"),
+
+    price: Yup.number()
+      .min(0, "Price cannot be negative")
+      .required("Price is required"),
+
     finalAmount: Yup.number()
-      .min(0, "Final amount must be positive")
+      .min(0, "Final amount cannot be negative")
+      .required("Final amount is required")
+      .test(
+        "final<=price",
+        "Final amount must not be greater than actual price",
+        function (value) {
+          return value <= this.parent.price;
+        }
+      ),
+
+    currency: Yup.string()
+      .oneOf(["INR", "USD", "EUR"], "Invalid currency")
       .required(),
-    currency: Yup.mixed<"INR" | "USD" | "EUR">()
-      .oneOf(["INR", "USD", "EUR"] as const)
+
+    billingCycle: Yup.string()
+      .oneOf(["monthly", "yearly"], "Invalid billing cycle")
       .required(),
-    billingCycle: Yup.mixed<"monthly" | "yearly">()
-      .oneOf(["monthly", "yearly"] as const)
-      .required(),
+
     features: Yup.array()
-      .of(Yup.string().required("Feature cannot be empty"))
-      .min(1, "At least one feature is required")
-      .required("Features are required"),
-    maxProjects: Yup.number().min(0).required(),
-    maxMembersPerProject: Yup.number().min(5).required(),
-    isActive: Yup.boolean().default(true),
+      .of(Yup.string().min(2, "Feature too short"))
+      .min(1, "At least one feature is required"),
+
+    maxProjects: Yup.number()
+      .min(1, "Minimum 1 project")
+      .required("Max projects is required"),
+
+    maxMembersPerProject: Yup.number()
+      .min(1, "Minimum 1 member")
+      .required("Max members is required"),
+
+    isActive: Yup.boolean().required(),
   })
   .required();
 
@@ -147,7 +179,7 @@ export default function PlanFormDialog({ plan, open, onClose }: Props) {
           onSubmit={handleSubmit}
           enableReinitialize
         >
-          {({ values, errors, touched, isSubmitting }) => (
+          {({ values, errors, touched, isSubmitting, dirty }) => (
             <Form className="space-y-6 mt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -299,7 +331,7 @@ export default function PlanFormDialog({ plan, open, onClose }: Props) {
                   <Field as={Input} type="number" name="maxProjects" />
                 </div>
                 <div>
-                  <Label>Max Storage (NO, 0 = Unlimited)</Label>
+                  <Label>Max Members (No, 0 = Unlimited)</Label>
                   <Field as={Input} type="number" name="maxMembersPerProject" />
                 </div>
               </div>
@@ -319,7 +351,7 @@ export default function PlanFormDialog({ plan, open, onClose }: Props) {
                 >
                   Cancel
                 </Button>
-                <Button type="submit" disabled={isSubmitting}>
+                <Button type="submit" disabled={isSubmitting || !dirty}>
                   {isSubmitting ? (
                     <>
                       <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-white mr-2" />
