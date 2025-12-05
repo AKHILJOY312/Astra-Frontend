@@ -23,6 +23,7 @@ import {
   ProtectedRoute,
   PublicRoute,
 } from "./routes/RouteGuards";
+import GlobalLoader from "./components/user/common/GlobalLoader";
 
 const pages = import.meta.glob("./pages/**/*.tsx");
 
@@ -51,7 +52,7 @@ export default function App() {
       <Suspense
         fallback={
           <div className="flex items-center justify-center h-screen text-2xl">
-            Loading...
+            <GlobalLoader />
           </div>
         }
       >
