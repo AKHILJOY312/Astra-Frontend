@@ -68,9 +68,6 @@ export class Channel {
     return new Date(this.props.updatedAt);
   }
 
-  /**
-   * Helper method to check if a specific role has a certain permission level.
-   */
   hasPermission(role: string, level: "view" | "message" | "manager"): boolean {
     const currentPermission = this.props.permissionsByRole[role];
     if (!currentPermission) return false;

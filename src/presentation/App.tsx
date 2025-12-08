@@ -16,7 +16,7 @@ import UserLayout from "@/presentation/components/user/layout/UserLayout";
 import AppLayout from "@/presentation/components/admin/layout/AppLayout";
 import NotFound from "@/presentation/components/user/common/NotFound";
 import { userRoutes, adminRoutes } from "@/presentation/routes/config";
-import { useAppSelector } from "./redux/hooks";
+
 import {
   AdminProtectedRoute,
   AdminPublicRoute,
@@ -24,6 +24,7 @@ import {
   PublicRoute,
 } from "./routes/RouteGuards";
 import GlobalLoader from "./components/user/common/GlobalLoader";
+import SocketInitializer from "./components/user/common/SocketInitializer";
 
 const pages = import.meta.glob("./pages/**/*.tsx");
 
@@ -49,6 +50,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <SocketInitializer />
       <Suspense
         fallback={
           <div className="flex items-center justify-center h-screen text-2xl">

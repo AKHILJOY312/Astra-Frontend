@@ -4,12 +4,14 @@ import type { Channel } from "@/domain/entities/channel/Channel";
 interface ChannelState {
   channels: Channel[];
   loading: boolean;
+  activeChannelId: string | null;
   error: string | null;
 }
 
 const initialState: ChannelState = {
   channels: [],
   loading: false,
+  activeChannelId: null,
   error: null,
 };
 
@@ -49,6 +51,9 @@ const channelSlice = createSlice({
     removeChannel(state, action: PayloadAction<string>) {
       state.channels = state.channels.filter((c) => c.id !== action.payload);
     },
+    setActiveChannel(state, action: PayloadAction<string | null>) {
+      state.activeChannelId = action.payload;
+    },
   },
 });
 
@@ -60,6 +65,7 @@ export const {
   setChannelLoading,
   setChannelError,
   clearChannelError,
+  setActiveChannel,
 } = channelSlice.actions;
 
 export default channelSlice.reducer;

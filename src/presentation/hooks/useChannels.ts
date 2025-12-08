@@ -42,7 +42,7 @@ const deleteChannelUC = container.get<DeleteChannelUseCase>(
 
 export const useChannels = (projectId: string) => {
   const dispatch = useDispatch<AppDispatch>();
-  const { channels, loading, error } = useSelector(
+  const { channels, loading, error, activeChannelId } = useSelector(
     (state: RootState) => state.channel
   );
 
@@ -50,13 +50,12 @@ export const useChannels = (projectId: string) => {
   // Load Channels
   // ---------------------------
   const loadChannels = useCallback(async () => {
-    console.log("Attempting to load channels for Project ID:", projectId);
     if (!projectId) return;
 
     dispatch(setChannelLoading());
     try {
       const data = await listChannelsUC.execute(projectId);
-      console.log("data from list Channel: ", data);
+
       dispatch(setChannels(data));
     } catch (err: any) {
       dispatch(
@@ -123,6 +122,7 @@ export const useChannels = (projectId: string) => {
     channels,
     loading,
     error,
+    activeChannelId,
 
     refreshChannels: loadChannels,
     createChannel,

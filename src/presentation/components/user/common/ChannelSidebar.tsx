@@ -24,17 +24,18 @@ import { Dropdown } from "../../ui/dropdown/Dropdown";
 import { DropdownItem } from "../../ui/dropdown/DropdownItem";
 
 import type { Channel } from "@/domain/entities/channel/Channel";
+import { setActiveChannel } from "@/presentation/redux/slice/channelSlice";
 
 export default function ChannelSidebar() {
   const dispatch = useDispatch();
   const { projectId } = useParams<{ projectId: string }>();
 
-  const { channels, loading } = useChannels(projectId!);
+  const { channels, loading, activeChannelId } = useChannels(projectId!);
   const { projects } = useProjects();
 
   const [channelsCollapsed, setChannelsCollapsed] = useState(false);
   const [dmsCollapsed, setDmsCollapsed] = useState(false);
-  const [activeChannel, setActiveChannel] = useState<string | null>(null);
+  // const [activeChannel, setActiveChannel] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isProjectMenuOpen, setIsProjectMenuOpen] = useState(false);
   const [open, setOpen] = useState(false);
@@ -66,6 +67,10 @@ export default function ChannelSidebar() {
     setChannelToEdit(channel);
     setIsEditModalOpen(true);
   };
+  const handleChannelClick = (channelId: string) => {
+    dispatch(setActiveChannel(channelId!));
+  };
+
   const isCurrentUserManager = true; // Replace with actual permission check
   return (
     <div className="w-60 bg-[#1A1D21] text-gray-300 flex flex-col h-screen min-h-0 pt-12">
@@ -218,10 +223,10 @@ export default function ChannelSidebar() {
                     className="relative group" // ← Important: wrapper for hover
                   >
                     <button
-                      onClick={() => setActiveChannel(ch.id)}
+                      onClick={() => handleChannelClick(ch.id)}
                       className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-left transition-all
               ${
-                activeChannel === ch.id
+                activeChannelId === ch.id
                   ? "bg-white/10 text-white font-medium"
                   : "text-gray-400 hover:text-white hover:bg-white/5"
               }`}

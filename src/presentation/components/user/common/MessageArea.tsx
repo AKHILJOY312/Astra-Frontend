@@ -1,204 +1,205 @@
-// src/components/slack/MessageArea.tsx
-import { useState, useRef, useEffect } from "react";
-import {
-  Paperclip,
-  Smile,
-  Send,
-  Plus,
-  Reply,
-  ThumbsUp,
-  MoreHorizontal,
-} from "lucide-react";
+// src/presentation/components/channel/ChatSection.tsx  (or wherever your messages UI lives)
 
-interface Message {
-  id: string;
-  user: string;
-  avatar: string;
-  text: string;
-  time: string;
+import { useEffect } from "react";
+import { useMessages } from "@/presentation/hooks/useMessages";
+
+import { useState } from "react";
+import { messageGateway } from "@/data/gateway/MessageGateway";
+
+interface Props {
+  channelId: string; // passed from parent (channel list, route, etc.)
 }
 
-export default function MessageArea() {
-  const [message, setMessage] = useState("");
-  const [messages] = useState<Message[]>([
-    {
-      id: "1",
-      user: "Alex Rivera",
-      avatar: "A",
-      text: "Hey team! Ready for the demo today?",
-      time: "10:30 AM",
-    },
-    {
-      id: "2",
-      user: "Sarah Chen",
-      avatar: "S",
-      text: "Yes! I just finalized the Figma prototype. I'll share the link in 5 mins",
-      time: "10:32 AM",
-    },
-  ]);
+export default function MessageArea({ channelId }: Props) {
+  // This hook does everything: loads history, joins socket room, listens live
+  // const { currentProject } = useProjects();
+  const { projectId } = useParams<{ projectId: string }>();
+  const { channels } = useChannels(projectId!);
 
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { messages, activeChannelId } = useMessages(
+    projectId ?? null,
+    channelId,
+    channels
+  );
 
+  // Get messages for current channel from Redux
+
+  const isLoading = !messages.length && activeChannelId === channelId; // optional loading state
+
+  // Optional: scroll to bottom when new message arrives
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = document.getElementById("messages-end");
+    el?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  useEffect(() => {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    textarea.style.height = "auto";
-    textarea.style.height = `${Math.min(textarea.scrollHeight, 120)}px`;
-  }, [message]);
+  if (!channelId) {
+    return (
+      <div className=" items-center justify-center text-gray-500">
+        Select a channel to start messaging
+      </div>
+    );
+  }
 
-  const handleSend = () => {
-    if (!message.trim()) return;
-    // setMessages(...) + API call here
-    setMessage("");
+  return (
+    <div className="flex flex-col ">
+      {/* Messages List */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+        {isLoading ? (
+          <div className="text-center text-gray-500">Loading messages...</div>
+        ) : messages.length === 0 ? (
+          <div className="text-center text-gray-500">
+            No messages yet. Start the conversation!
+          </div>
+        ) : (
+          messages.map((msg) => <MessageBubble key={msg.id} message={msg} />)
+        )}
+        <div id="messages-end" />
+      </div>
+
+      {/* Input Box */}
+      <MessageInput channelId={channelId} projectId={projectId} />
+    </div>
+  );
+}
+
+// src/presentation/components/channel/MessageInput.tsx
+
+interface MessageInputProps {
+  channelId: string;
+  projectId: string | undefined;
+}
+
+function MessageInput({ channelId, projectId }: MessageInputProps) {
+  const [text, setText] = useState("");
+  // const userId = useAppSelector((state) => state.auth.user?.id); // assuming you have user in auth slice
+
+  const send = () => {
+    if (!text.trim()) return;
+
+    messageGateway.sendMessage({
+      text: text.trim(),
+      channelId,
+      projectId: projectId,
+    });
+
+    setText(""); // clear input
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
-      handleSend();
+      send();
     }
   };
 
   return (
-    <div className="flex-1 flex flex-col bg-[#36393f]">
-      {/* ← THIS LINE FIXED EVERYTHING */}
-      <div className="flex-1 overflow-y-auto pt-12">
-        {" "}
-        {/* ← 48px = header height */}
-        <div className="max-w-4xl mx-auto px-4 py-6">
-          {messages.length === 0 ? (
-            <div className="text-center py-32">
-              <div className="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 opacity-20" />
-              <h2 className="text-2xl font-bold text-white mb-2">#general</h2>
-              <p className="text-gray-400">
-                This is the very beginning of #general.
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-6">
-              <div className="flex items-center gap-3 text-xs text-gray-500">
-                <div className="flex-1 h-px bg-gray-700" />
-                <span>Today</span>
-                <div className="flex-1 h-px bg-gray-700" />
-              </div>
-
-              {messages.map((msg, i) => {
-                const showAvatar = i === 0 || messages[i - 1].user !== msg.user;
-
-                return (
-                  <div
-                    key={msg.id}
-                    className="group flex gap-3 hover:bg-white/5 px-3 py-2 -mx-3 rounded-lg transition"
-                  >
-                    {showAvatar ? (
-                      <>
-                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex shrink-0 items-center justify-center text-white font-bold">
-                          {msg.avatar}
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-baseline gap-2">
-                            <span className="font-semibold text-white">
-                              {msg.user}
-                            </span>
-                            <span className="text-xs text-gray-400">
-                              {msg.time}
-                            </span>
-                          </div>
-                          <p className="text-gray-100 mt-0.5 break-words">
-                            {msg.text}
-                          </p>
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="w-10 shrink-0">
-                          <span className="text-xs text-gray-500 invisible">
-                            00:00
-                          </span>
-                        </div>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-gray-100 break-words">
-                            {msg.text}
-                          </p>
-                        </div>
-                      </>
-                    )}
-
-                    <div className="opacity-0 group-hover:opacity-100 flex items-center gap-1">
-                      <button className="p-1.5 hover:bg-white/10 rounded">
-                        <Smile className="w-4 h-4" />
-                      </button>
-                      <button className="p-1.5 hover:bg-white/10 rounded">
-                        <Reply className="w-4 h-4" />
-                      </button>
-                      <button className="p-1.5 hover:bg-white/10 rounded">
-                        <ThumbsUp className="w-4 h-4" />
-                      </button>
-                      <button className="p-1.5 hover:bg-white/10 rounded">
-                        <MoreHorizontal className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-              <div ref={messagesEndRef} />
-            </div>
-          )}
-        </div>
+    <div className="border-t p-4">
+      <div className="flex gap-3">
+        <input
+          type="text"
+          value={text}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={handleKeyDown}
+          placeholder="Type a message..."
+          className="flex-1 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button
+          onClick={send}
+          disabled={!text.trim()}
+          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+        >
+          Send
+        </button>
       </div>
+    </div>
+  );
+}
 
-      {/* Input — fixed at bottom */}
-      <div className="border-t border-white/10">
-        <div className="max-w-4xl mx-auto p-4">
-          <div className="bg-[#40444b] rounded-lg shadow-lg overflow-hidden">
-            <div className="flex items-end gap-3 p-3">
-              <button className="mb-2 p-2 hover:bg-white/10 rounded-lg transition">
-                <Plus className="w-5 h-5 text-gray-400" />
-              </button>
+import { format } from "date-fns";
+import { Message } from "@/domain/entities/message/Message";
+import { useProjects } from "@/presentation/hooks/useProjects";
+import { useAuth } from "@/presentation/hooks/useAuth";
+import { useParams } from "react-router-dom";
+import { useChannels } from "@/presentation/hooks/useChannels";
 
-              <textarea
-                ref={textareaRef}
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder="Message #general"
-                rows={1}
-                className="flex-1 bg-transparent text-white placeholder-gray-400 resize-none outline-none max-h-32 min-h-6"
-              />
+interface MessageBubbleProps {
+  message: Message;
+  isOwn?: boolean;
+}
 
-              <div className="flex items-center gap-1 mb-2">
-                <button className="p-2 hover:bg-white/10 rounded-lg transition">
-                  <Paperclip className="w-5 h-5 text-gray-400" />
-                </button>
-                <button className="p-2 hover:bg-white/10 rounded-lg transition">
-                  <Smile className="w-5 h-5 text-gray-400" />
-                </button>
-                {message.trim() ? (
-                  <button
-                    onClick={handleSend}
-                    className="p-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition"
-                  >
-                    <Send className="w-5 h-5" />
-                  </button>
-                ) : (
-                  <div className="p-2">
-                    <Send className="w-5 h-5 text-gray-600" />
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+function MessageBubble({ message, isOwn = false }: MessageBubbleProps) {
+  const time = format(new Date(message.createdAt), "HH:mm");
+  const { user } = useAuth();
+  if (message.senderId === user?.id) {
+    isOwn = true;
+  }
 
-          <p className="mt-2 text-xs text-gray-500 text-center">
-            <kbd className="px-1 bg-white/10 rounded">Enter</kbd> to send •{" "}
-            <kbd className="px-1 bg-white/10 rounded">Shift + Enter</kbd> for
-            new line
+  return (
+    <div
+      className={`flex ${
+        isOwn ? "justify-end" : "justify-start"
+      } animate-in slide-in-from-bottom-2 duration-300`}
+    >
+      <div
+        className={`
+          max-w-xs lg:max-w-md px-4 py-3 rounded-2xl shadow-sm
+          ${
+            isOwn
+              ? "bg-blue-600 text-white rounded-br-none"
+              : "bg-white border border-gray-200 text-blue-900 rounded-bl-none"
+          }
+        `}
+      >
+        {/* Sender name (only show if not own message) */}
+        {!isOwn && (
+          <p className="text-xs font-semibold text-gray-500 mb-1">
+            {message.senderId === user?.id
+              ? "You"
+              : ` ${message.senderName.slice(0, 6).split(" ")[0]}...`}
+            {/* Replace with real name when you have users loaded */}
           </p>
+        )}
+
+        {/* Message text */}
+        <p className="text-sm wrap-break-word">{message.text}</p>
+
+        {/* Attachments indicator */}
+        {message.hasAttachments && (
+          <div className="mt-2 flex items-center gap-1 text-xs opacity-80">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                fillRule="evenodd"
+                d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z"
+                clipRule="evenodd"
+              />
+            </svg>
+            <span>
+              Attachment
+              {message.hasAttachments ? "s" : ""}
+            </span>
+          </div>
+        )}
+
+        {/* Timestamp */}
+        <div
+          className={`mt-1 text-xs ${
+            isOwn ? "text-blue-100" : "text-gray-400"
+          } text-right`}
+        >
+          {time}
+          {isOwn && (
+            <span className="ml-1">
+              {/* Double tick when delivered/read */}
+              <svg
+                className="w-4 h-4 inline"
+                fill="currentColor"
+                viewBox="0 0 16 16"
+              >
+                <path d="M13.7 4.3a1 1 0 00-1.4-1.4L6 9.2l-2.3-2.3a1 1 0 00-1.4 1.4l3 3a1 1 0 001.4 0l7-7z" />
+                <path d="M13.7 7.3a1 1 0 00-1.4-1.4L7 11.2l-1.3-1.3a1 1 0 00-1.4 1.4l2 2a1 1 0 001.4 0l7-7a1 1 0 000-1.4z" />
+              </svg>
+            </span>
+          )}
         </div>
       </div>
     </div>
