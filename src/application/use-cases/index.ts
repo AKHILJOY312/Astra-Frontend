@@ -7,3 +7,7 @@ export * from "./project/GetProjectMembersUseCase";
 export * from "./plan/user/GetCurrentPlanUseCase";
 export * from "./plan/user/GetPlanLimitsUseCase";
 export * from "./channel/ListChannelsUseCase";
+
+export * from "./user/ListUsersUseCase";
+export * from "./user/BlockUserUseCase";
+export * from "./user/AssignAdminRoleUseCase";
