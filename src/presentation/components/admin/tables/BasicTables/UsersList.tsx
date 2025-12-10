@@ -81,11 +81,10 @@ export default function UsersList() {
       setListState((prev) => ({ ...prev, page: newPage }));
     }
   };
-  const handleSearchChange = (newSearchTerm: string) => {
-    // Only set the new term if it's different. Reset page to 1 on a new search.
+  const handleSearchChange = React.useCallback((newSearchTerm: string) => {
     setSearchTerm(newSearchTerm || "");
-    setListState((prev) => ({ ...prev, page: 1 })); // Reset to page 1 for new search results
-  };
+    setListState((prev) => ({ ...prev, page: 1 }));
+  }, []);
   const fetchUsers = useCallback(async () => {
     setListState((prev) => ({ ...prev, loading: true, error: null }));
     try {
@@ -238,22 +237,22 @@ export default function UsersList() {
         Error: {listState.error}
       </div>
     );
-  }
+  } //management
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/[0.03]">
       {/* Displaying pagination summary */}
-      {/* <SearchBar
+      <SearchBar
         onSearchChange={handleSearchChange}
         isLoading={listState.loading}
-      /> */}
+      />
       <div className="p-4 text-sm text-gray-600 dark:text-gray-400">
         Showing {listState.users.length} of {listState.total} users. Page{" "}
         {listState.page} of {listState.totalPages}.
       </div>
       <div className="max-w-full overflow-x-auto">
         <Table>
-          <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
+          <TableHeader className="border-b border-gray-100 dark:border-white/5">
             <TableRow>
               {/* ... Table Header Cells (User Name, Email, Status, Role, Actions) */}
               <TableCell
@@ -289,7 +288,7 @@ export default function UsersList() {
             </TableRow>
           </TableHeader>
 
-          <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
+          <TableBody className="divide-y divide-gray-100 dark:divide-white/5">
             {listState.users.map((user) => (
               <TableRow
                 key={user.id}
@@ -379,7 +378,7 @@ export default function UsersList() {
           isLoading={isActionLoading}
         />
       )}
-      <div className="flex justify-between items-center p-4 border-t border-gray-100 dark:border-white/[0.05]">
+      <div className="flex justify-between items-center p-4 border-t border-gray-100 dark:border-white/5">
         <span className="text-sm text-gray-600 dark:text-gray-400">
           Showing {listState.users.length} of {listState.total} users.
         </span>
@@ -486,38 +485,38 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   );
 };
 
-// interface SearchBarProps {
-//   onSearchChange: (search: string) => void;
-//   isLoading: boolean;
-// }
+interface SearchBarProps {
+  onSearchChange: (search: string) => void;
+  isLoading: boolean;
+}
 
-// export const SearchBar: React.FC<SearchBarProps> = ({
-//   onSearchChange,
-//   isLoading,
-// }) => {
-//   const [searchTerm, setSearchTerm] = React.useState("");
+export const SearchBar: React.FC<SearchBarProps> = ({
+  onSearchChange,
+  isLoading,
+}) => {
+  const [searchTerm, setSearchTerm] = React.useState("");
 
-//   // Use the debounce hook
-//   const debouncedSearchTerm = useDebounce(searchTerm, 300); // 300ms debounce
+  // Use the debounce hook
+  const debouncedSearchTerm = useDebounce(searchTerm, 300); // 300ms debounce
 
-//   // Effect to trigger parent component update only after debounce
-//   React.useEffect(() => {
-//     onSearchChange(debouncedSearchTerm);
-//   }, [debouncedSearchTerm, onSearchChange]);
+  // Effect to trigger parent component update only after debounce
+  React.useEffect(() => {
+    onSearchChange(debouncedSearchTerm);
+  }, [debouncedSearchTerm, onSearchChange]);
 
-//   return (
-//     <div className="p-4 bg-white dark:bg-gray-800 border-b dark:border-white/[0.05]">
-//       <input
-//         type="text"
-//         placeholder="Search by name or email..."
-//         value={searchTerm}
-//         onChange={(e) => setSearchTerm(e.target.value)}
-//         disabled={isLoading}
-//         className="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
-//       />
-//       {isLoading && (
-//         <span className="text-xs text-gray-500 mt-1 block">Searching...</span>
-//       )}
-//     </div>
-//   );
-// };
+  return (
+    <div className="p-4 bg-white dark:bg-gray-800 border-b dark:border-white/5">
+      <input
+        type="text"
+        placeholder="Search by name or email..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        disabled={isLoading}
+        className="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white"
+      />
+      {isLoading && (
+        <span className="text-xs text-gray-500 mt-1 block">Searching...</span>
+      )}
+    </div>
+  );
+};
