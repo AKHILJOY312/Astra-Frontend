@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import type { AppDispatch } from "@/presentation/redux/store/store";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "@/presentation/redux/thunk/authThunks";
+import { useAuth } from "@/presentation/hooks/useAuth";
 
 // Helper to clsx-like class merging
 const cn = (...inputs: (string | undefined | false)[]) =>
@@ -45,7 +46,26 @@ export default function SlackSidebar() {
     dispatch(logoutUser());
     navigate("/login");
   }
-  const user = { name: "John Doe", image: "", initials: "JD" };
+  function getInitials(name?: string): string {
+    if (!name) return "";
+
+    const parts = name.trim().split(" ");
+
+    // If only one name → take first 2 letters
+    if (parts.length === 1) {
+      return parts[0].slice(0, 2).toUpperCase();
+    }
+
+    // If full name → take first letter of first & last word
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  const userData = useAuth();
+  const user = {
+    name: userData.user?.name || "",
+    image: "",
+    initials: getInitials(userData.user?.name),
+  };
 
   return (
     <aside className="flex h-screen w-[70px] flex-col items-center gap-y-4 bg-[#381349] pb-2 pt-3">
