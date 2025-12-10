@@ -31,15 +31,16 @@ const navItems: NavItem[] = [
     subItems: [{ name: "Ecommerce", path: "/", pro: false }],
   },
   {
+    icon: <UserCircleIcon />,
+    name: "User Management ",
+    path: "/admin/users",
+  },
+  {
     icon: <CalenderIcon />,
     name: "Plan",
     path: "/admin/plan",
   },
-  {
-    icon: <UserCircleIcon />,
-    name: "User Profile",
-    path: "/profile",
-  },
+
   {
     name: "Forms",
     icon: <ListIcon />,

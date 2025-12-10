@@ -7,7 +7,7 @@ export const TYPES = {
   IChannelRepository: Symbol.for("IChannelRepository"),
   IUserSubscriptionRepository: Symbol.for("IUserSubscriptionRepository"),
   IRazorpayService: Symbol.for("IRazorpayService"),
-
+  IAdminUsersRepository: Symbol.for("IAdminUsersRepository"),
   // Auth use cases
   LoginUseCase: Symbol.for("LoginUseCase"),
   RegisterUseCase: Symbol.for("RegisterUseCase"),
@@ -44,4 +44,8 @@ export const TYPES = {
 
   CreateRazorpayOrderUseCase: Symbol.for("CreateRazorpayOrderUseCase"),
   VerifyPaymentUseCase: Symbol.for("VerifyPaymentUseCase"),
+
+  ListUsersUseCase: Symbol.for("ListUsersUseCase"),
+  BlockUserUseCase: Symbol.for("BlockUserUseCase"),
+  AssignAdminRoleUseCase: Symbol.for("AssignAdminRole"),
 } as const;

@@ -33,11 +33,14 @@ import type { IChannelRepository } from "@/application/repo/IChannelRepository";
 import { ChannelRepositoryImpl } from "@/data/repo/ChannelRepositoryImpl";
 import {
   AddMemberUseCase,
+  AssignAdminRoleUseCase,
+  BlockUserUseCase,
   CreateProjectUseCase,
   GetProjectByIdUseCase,
   GetProjectMembersUseCase,
   ListChannelsUseCase,
   ListUserProjectsUseCase,
+  ListUsersUseCase,
 } from "@/application/use-cases";
 import { CreateChannelUseCase } from "@/application/use-cases/channel/CreateChannelUseCase";
 import { UpgradePlanUseCase } from "@/application/use-cases/upgradeplan/UpgradePlanUseCase";
@@ -49,6 +52,8 @@ import type { IUserSubscriptionRepository } from "@/application/repo/IUserSubscr
 import { UserSubscriptionRepositoryImpl } from "@/data/repo/UserSubscriptionRepositoryImpl";
 import { EditChannelUseCase } from "@/application/use-cases/channel/EditChannelUseCase";
 import { DeleteChannelUseCase } from "@/application/use-cases/channel/DeleteChannelUseCase";
+import type { IAdminUsersRepository } from "@/application/repo/IAdminUsersReopsitory";
+import { AdminUserRepositoryImpl } from "@/data/repo/AdminUserRepositoryImpl";
 
 const container = new Container();
 
@@ -57,27 +62,26 @@ container
   .bind<IAuthRepository>(TYPES.IAuthRepository) // ← generic = interface type
   .to(AuthRepositoryImpl)
   .inSingletonScope();
-
 container.bind(TYPES.IPlanRepository).to(PlanRepositoryImpl).inSingletonScope();
-
 container
   .bind<IProjectRepository>(TYPES.IProjectRepository)
   .to(ProjectRepositoryImpl)
   .inSingletonScope();
-
 container
   .bind<IProjectMembershipRepository>(TYPES.IProjectMembershipRepository)
   .to(ProjectMembershipRepositoryImpl)
   .inSingletonScope();
-
 container
   .bind<IChannelRepository>(TYPES.IChannelRepository)
   .to(ChannelRepositoryImpl)
   .inSingletonScope();
-
 container
   .bind<IUserSubscriptionRepository>(TYPES.IUserSubscriptionRepository)
   .to(UserSubscriptionRepositoryImpl);
+container
+  .bind<IAdminUsersRepository>(TYPES.IAdminUsersRepository)
+  .to(AdminUserRepositoryImpl);
+
 // ───── Use‑cases ────────────────────────────────────────
 // Auth use cases
 container
@@ -196,4 +200,16 @@ container
   .to(DeleteChannelUseCase)
   .inTransientScope();
 
+container
+  .bind<ListUsersUseCase>(TYPES.ListUsersUseCase)
+  .to(ListUsersUseCase)
+  .inTransientScope();
+container
+  .bind<BlockUserUseCase>(TYPES.BlockUserUseCase)
+  .to(BlockUserUseCase)
+  .inTransientScope();
+container
+  .bind<AssignAdminRoleUseCase>(TYPES.AssignAdminRoleUseCase)
+  .to(AssignAdminRoleUseCase)
+  .inTransientScope();
 export { container, TYPES };
