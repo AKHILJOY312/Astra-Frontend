@@ -92,9 +92,10 @@ export default function SlackSidebar() {
       {/* Navigation Items */}
       <SidebarButton
         icon={Home}
-        label="Home"
+        label="Projects"
         isActive={activeItem === "home"}
         onClick={() => setActiveItem("home")}
+        route="/projects"
       />
       <SidebarButton
         icon={MessagesSquare}
@@ -200,6 +201,7 @@ interface SidebarButtonProps {
   label: string;
   isActive?: boolean;
   onClick?: () => void;
+  route?: string;
 }
 
 function SidebarButton({
@@ -207,10 +209,17 @@ function SidebarButton({
   label,
   isActive,
   onClick,
+  route,
 }: SidebarButtonProps) {
+  const navigate = useNavigate(); // ⬅️ Add this
+
+  function handleClick() {
+    if (route) navigate(route); // ⬅️ Navigate if route is given
+    if (onClick) onClick(); // Keep your active state logic
+  }
   return (
     <button
-      onClick={onClick}
+      onClick={handleClick}
       className="group flex flex-col items-center justify-center gap-y-0.5"
     >
       <div

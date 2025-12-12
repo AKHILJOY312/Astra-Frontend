@@ -1,4 +1,3 @@
-// src/data/repo/ProjectRepositoryImpl.ts
 import type { IProjectRepository } from "../../application/repo/IProjectRepository";
 import * as projectApi from "../api/projectApi";
 import { projectResponseToEntity } from "../mappers/projectMapper";
@@ -11,7 +10,6 @@ export class ProjectRepositoryImpl implements IProjectRepository {
   }) {
     const response = await projectApi.createProject(dto);
 
-    // Handle limit / error response
     if (!response.data.success) {
       throw new Error(response.data.error || "Failed to create project");
     }
@@ -22,7 +20,6 @@ export class ProjectRepositoryImpl implements IProjectRepository {
   async getUserProjects() {
     const response = await projectApi.getUserProjects();
 
-    // If backend sent error format
     if (!response.data.success) {
       throw new Error(response.data.error || "Failed to load projects");
     }
@@ -49,7 +46,7 @@ export class ProjectRepositoryImpl implements IProjectRepository {
   async delete(projectId: string) {
     await projectApi.deleteProject(projectId);
   }
-  // src/data/repo/PlanRepositoryImpl.ts
+
   async upgradeToPlan(planId: string): Promise<void> {
     await projectApi.upgradePlan(planId);
   }
