@@ -17,15 +17,27 @@ export class ProjectRepositoryImpl implements IProjectRepository {
     return projectResponseToEntity(response.data.data);
   }
 
-  async getUserProjects() {
-    const response = await projectApi.getUserProjects();
+  async getUserProjects(params: {
+    page: number;
+    limit: number;
+    search?: string;
+  }) {
+    const response = await projectApi.getUserProjects(params);
 
     if (!response.data.success) {
       throw new Error(response.data.error || "Failed to load projects");
     }
+    console.log(response.data);
+    const { data, page, limit, totalPages, totalCount } = response.data;
+    console.log("this is it", response.data);
 
-    const projectsArray = response.data.data;
-    return projectsArray.map(projectResponseToEntity);
+    return {
+      projects: data.map(projectResponseToEntity),
+      page,
+      limit,
+      totalPages,
+      totalCount,
+    };
   }
 
   async getById(projectId: string) {
