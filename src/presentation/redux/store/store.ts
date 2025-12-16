@@ -8,6 +8,7 @@ import projectReducer from "../slice/projectSlice";
 import channelReducer from "../slice/channelSlice";
 import uiReducer from "../slice/uiSlice";
 import messageReducer from "../slice/messageSlice";
+import userReducer from "../slice/userSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -15,6 +16,7 @@ const rootReducer = combineReducers({
   ui: uiReducer,
   channel: channelReducer,
   messages: messageReducer,
+  user: userReducer,
 });
 
 // Type root reducer BEFORE wrapping with persistReducer

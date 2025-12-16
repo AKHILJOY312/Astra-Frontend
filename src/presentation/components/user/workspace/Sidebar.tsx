@@ -26,7 +26,7 @@ export default function SlackSidebar() {
   const [showDropdown, setShowDropdown] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-
+  const userData = useAuth();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -60,11 +60,11 @@ export default function SlackSidebar() {
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   }
 
-  const userData = useAuth();
   const user = {
     name: userData.user?.name || "",
     image: "",
     initials: getInitials(userData.user?.name),
+    email: userData.user?.email,
   };
 
   return (
@@ -166,13 +166,16 @@ export default function SlackSidebar() {
                   <p className="text-sm font-semibold text-white">
                     {user.name}
                   </p>
-                  <p className="text-xs text-green-400">Online</p>
+                  <p className="text-xs text-green-400">{user.email}</p>
                 </div>
               </div>
 
               <div className="my-2 h-px bg-white/10" />
 
-              <button className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-white/90 transition hover:bg-white/10">
+              <button
+                className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm text-white/90 transition hover:bg-white/10"
+                onClick={() => navigate("/user/profile")}
+              >
                 <Settings className="h-4 w-4" />
                 Profile & account
               </button>

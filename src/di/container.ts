@@ -55,6 +55,9 @@ import { DeleteChannelUseCase } from "@/application/use-cases/channel/DeleteChan
 import type { IAdminUsersRepository } from "@/application/repo/IAdminUsersReopsitory";
 import { AdminUserRepositoryImpl } from "@/data/repo/AdminUserRepositoryImpl";
 import { UpdateProjectUseCase } from "@/application/use-cases/project/UpdateProjectUseCase";
+import type { IUserRepository } from "@/application/repo/IUserRepository";
+import { UserRepositoryImpl } from "@/data/repo/UserRepositoryImpl";
+import { GetUserProfileUseCase } from "@/application/use-cases/user/GetUserProfileUseCase";
 
 const container = new Container();
 
@@ -82,7 +85,7 @@ container
 container
   .bind<IAdminUsersRepository>(TYPES.IAdminUsersRepository)
   .to(AdminUserRepositoryImpl);
-
+container.bind<IUserRepository>(TYPES.IUserRepository).to(UserRepositoryImpl);
 // ───── Use‑cases ────────────────────────────────────────
 // Auth use cases
 container
@@ -217,4 +220,11 @@ container
   .bind<AssignAdminRoleUseCase>(TYPES.AssignAdminRoleUseCase)
   .to(AssignAdminRoleUseCase)
   .inTransientScope();
+
+//user
+container
+  .bind<GetUserProfileUseCase>(TYPES.GetUserProfileUseCase)
+  .to(GetUserProfileUseCase)
+  .inTransientScope();
+
 export { container, TYPES };

@@ -86,6 +86,13 @@ export const userRoutes: RouteItem[] = [
     protected: true,
     filePath: "user/upgrade/",
   },
+  {
+    path: "/user/profile",
+    component: "UserProfile",
+    layout: "app",
+    protected: true,
+    filePath: "user/profile/",
+  },
   // {
   //   path: '/',
   //   component: 'Dashboard',

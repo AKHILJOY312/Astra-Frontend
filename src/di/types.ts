@@ -8,6 +8,8 @@ export const TYPES = {
   IUserSubscriptionRepository: Symbol.for("IUserSubscriptionRepository"),
   IRazorpayService: Symbol.for("IRazorpayService"),
   IAdminUsersRepository: Symbol.for("IAdminUsersRepository"),
+  IUserRepository: Symbol.for("IUserRepository"),
+
   // Auth use cases
   LoginUseCase: Symbol.for("LoginUseCase"),
   RegisterUseCase: Symbol.for("RegisterUseCase"),
@@ -22,6 +24,10 @@ export const TYPES = {
   ListUserProjectsUseCase: Symbol.for("ListUserProjectsUseCase"),
   GetProjectByIdUseCase: Symbol.for("GetProjectByIdUseCase"),
   UpdateProjectUseCase: Symbol.for("UpdateProjectUseCase"),
+
+  //user
+  GetUserProfileUseCase: Symbol.for("GetUserProfileUseCase"),
+
   // Members
   AddMemberUseCase: Symbol.for("AddMemberUseCase"),
   GetProjectMembersUseCase: Symbol.for("GetProjectMembersUseCase"),
