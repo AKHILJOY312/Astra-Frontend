@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/presentation/redux/hooks";
 import {
   fetchUserProfile,
   updateUserProfile,
-  //   deleteUserAccount,
+  // deleteUserAccount,
   uploadProfileImage,
 } from "@/presentation/redux/slice/userSlice";
 import { logoutUser } from "@/presentation/redux/thunk/authThunks";
@@ -183,12 +183,12 @@ const UserProfile = () => {
 
             {/* ACTION BUTTONS */}
             <div className="space-y-3 pt-2">
-              <button
+              {/* <button
                 onClick={() => setEditOpen(true)}
                 className="w-full flex items-center justify-center gap-2 bg-[#1a1d21] hover:bg-[#2a2d31] border border-gray-700 hover:border-gray-600 px-5 py-3 rounded-lg transition-all duration-200 text-gray-200 font-medium"
               >
                 <Edit size={18} /> Edit Profile
-              </button>
+              </button> */}
 
               <button
                 onClick={() => setChangePwdConfirmOpen(true)}
@@ -197,12 +197,12 @@ const UserProfile = () => {
                 Change Password
               </button>
 
-              <button
+              {/* <button
                 onClick={() => setDeleteOpen(true)}
                 className="w-full flex items-center justify-center gap-2 text-red-400 hover:text-red-300 bg-red-500/5 hover:bg-red-500/10 border border-red-500/20 hover:border-red-500/30 px-5 py-3 rounded-lg transition-all duration-200 font-medium"
               >
                 <Trash2 size={18} /> Delete Account
-              </button>
+              </button> */}
             </div>
           </div>
         </div>

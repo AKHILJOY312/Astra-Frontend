@@ -12,6 +12,7 @@ export class ProjectRepositoryImpl implements IProjectRepository {
     const response = await projectApi.createProject(dto);
 
     if (!response.data.success) {
+      console.log(response.data.error);
       throw new Error(response.data.error || "Failed to create project");
     }
 

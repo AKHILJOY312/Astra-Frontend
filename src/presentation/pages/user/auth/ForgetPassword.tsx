@@ -66,7 +66,9 @@ export default function ForgotPasswordPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl mb-4 shadow-lg">
-            <span className="text-2xl font-bold text-white">A</span>
+            <span className="text-2xl font-bold text-white">
+              <img src="/images/logo/logo-icon.svg" alt="" />
+            </span>
           </div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
             Forgot Password?
@@ -103,8 +105,8 @@ export default function ForgotPasswordPage() {
                 Email Address
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 bg-yellow-200 flex items-center pointer-events-none">
-                  {/* <Mail className="h-5 w-5 text-gray-400" /> */}
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <Mail className="h-5 w-5 text-gray-400" />
                 </div>
                 <input
                   id="email"
@@ -117,7 +119,7 @@ export default function ForgotPasswordPage() {
                     setError("");
                   }}
                   onBlur={handleEmailBlur}
-                  className={`w-full pl-36  pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none ${
+                  className={`w-full pl-15  py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none ${
                     emailError
                       ? "border-red-300 bg-red-50"
                       : "border-gray-300 bg-white"

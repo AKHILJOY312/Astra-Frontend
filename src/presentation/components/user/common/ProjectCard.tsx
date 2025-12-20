@@ -25,13 +25,13 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         ) : (
           <div className="absolute inset-0 bg-black/20" />
         )}
-        <div className="absolute top-4 right-4">
+        {/* <div className="absolute top-4 right-4">
           {project?.isPrivate ? (
             <Lock className="w-5 h-5 text-white bg-black/50 rounded-full p-1" />
           ) : (
             <Globe className="w-5 h-5 text-white bg-black/50 rounded-full p-1" />
           )}
-        </div>
+        </div> */}
       </div>
 
       {/* Content */}
@@ -44,7 +44,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
         </p>
 
         {/* Footer Stats */}
-        <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
+        {/* <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400">
           <div className="flex items-center gap-2">
             <Users className="w-4 h-4" />
             <span>12 members</span>
@@ -53,7 +53,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
             <MessageSquare className="w-4 h-4" />
             <span>48 messages</span>
           </div>
-        </div>
+        </div> */}
       </div>
 
       {/* Hover Effect */}

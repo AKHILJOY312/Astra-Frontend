@@ -4,14 +4,23 @@ import * as Yup from "yup";
 // -----------------------------
 // LOGIN SCHEMA
 // -----------------------------
+
 export const loginSchema = Yup.object({
   email: Yup.string()
-    .email("Please enter a valid email address")
-    .required("Email is required"),
+    .trim()
+    .strict(true)
+    .required("Email is required")
+    .max(254, "Email is too long")
+    .matches(
+      /^[a-zA-Z0-9]+([._%+-]?[a-zA-Z0-9]+)*@[a-zA-Z0-9-]+\.[a-zA-Z]{2,}$/,
+      "Please enter a valid email address"
+    ),
 
   password: Yup.string()
-    .min(1, "Password is required")
-    .required("Password is required"),
+    .required("Password is required")
+    .min(8, "Password must be at least 8 characters")
+    .max(128, "Password is too long")
+    .matches(/^(?!\s).*$/, "Password cannot start with whitespace"),
 });
 
 // -----------------------------

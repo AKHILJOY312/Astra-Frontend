@@ -34,7 +34,7 @@ const getUserProfileUC = container.get<GetUserProfileUseCase>(
    Thunks
 ========================= */
 
-// 1️⃣ Fetch profile
+//  Fetch profile
 export const fetchUserProfile = createAsyncThunk(
   "user/fetchProfile",
   async (_, { rejectWithValue }) => {
@@ -48,7 +48,7 @@ export const fetchUserProfile = createAsyncThunk(
   }
 );
 
-// 2️⃣ Update name & email
+//  Update name & email
 export const updateUserProfile = createAsyncThunk(
   "user/updateProfile",
   async (payload: { name: string; email: string }, { rejectWithValue }) => {
@@ -63,7 +63,7 @@ export const updateUserProfile = createAsyncThunk(
   }
 );
 
-// 3️⃣ Upload profile image (S3)
+//  Upload profile image (S3)
 export const uploadProfileImage = createAsyncThunk(
   "user/uploadProfileImage",
   async (file: File, { rejectWithValue }) => {

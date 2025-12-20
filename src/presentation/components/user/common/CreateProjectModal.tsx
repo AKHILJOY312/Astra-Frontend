@@ -32,10 +32,10 @@ export default function CreateProjectModal() {
       setName("");
       setDescription("");
       dispatch(closeCreateProjectModal());
-    } catch (err) {
+    } catch (error) {
       let backendMessage = "Failed to create project";
       let upgradeRequired = false;
-      console.log(err);
+
       // Safe narrowing
       if (typeof error === "object" && error !== null) {
         const err = error as any;
