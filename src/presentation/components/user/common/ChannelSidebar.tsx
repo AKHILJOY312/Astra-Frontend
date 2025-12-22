@@ -31,6 +31,15 @@ import type { Channel } from "@/domain/entities/channel/Channel";
 import { setActiveChannel } from "@/presentation/redux/slice/channelSlice";
 import { setCurrentProject } from "@/presentation/redux/slice/projectSlice";
 
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+  message?: string;
+}
+
 export default function ChannelSidebar() {
   const dispatch = useDispatch();
   const { projectId } = useParams<{ projectId: string }>();
@@ -45,7 +54,7 @@ export default function ChannelSidebar() {
   const projectName = currentProject?.projectName || "Loading...";
   const description = currentProject?.description || "No description";
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [channelToEdit, setChannelToEdit] = useState<any | null>(null);
+  const [channelToEdit, setChannelToEdit] = useState<Channel | null>(null);
   const createdAt = currentProject?.createdAt
     ? new Date(currentProject.createdAt).toLocaleDateString("en-US", {
         month: "long",
@@ -65,7 +74,7 @@ export default function ChannelSidebar() {
     { id: "d2", name: "Bob Smith", online: false },
     { id: "d3", name: "Charlie Brown", online: true },
   ];
-  const handleEditChannel = (channel: any) => {
+  const handleEditChannel = (channel: Channel) => {
     setChannelToEdit(channel);
     setIsEditModalOpen(true);
   };
@@ -153,7 +162,7 @@ export default function ChannelSidebar() {
             <DropdownItem
               icon={<Settings className="w-4 h-4" />}
               onClick={() => {
-                dispatch(setCurrentProject(currentProject));
+                dispatch(setCurrentProject(currentProject!));
                 dispatch(openEditProjectModal());
               }}
             >
@@ -405,7 +414,8 @@ function CreateChannelModal({ projectId, onClose }: CreateChannelModalProps) {
       });
 
       onClose(); // only close on success
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as ApiError;
       console.log("Create channel error:", err);
 
       setError(
@@ -466,7 +476,7 @@ function CreateChannelModal({ projectId, onClose }: CreateChannelModalProps) {
               onChange={(e) =>
                 setPermissionsByRole({
                   ...permissionsByRole,
-                  [r]: e.target.value as any,
+                  [r]: e.target.value as Permission,
                 })
               }
             >
@@ -537,7 +547,8 @@ function EditChannelModal({
       });
 
       onClose();
-    } catch (err: any) {
+    } catch (error: unknown) {
+      const err = error as ApiError;
       setError(err.response?.data?.message || "Could not update channel");
     }
   };

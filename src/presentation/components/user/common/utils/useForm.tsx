@@ -60,6 +60,7 @@ export const useForm = (validate: { (values: IValues): IValues }) => {
         }
       }
     } catch (error) {
+      console.error(error);
       notification["error"]({
         message: "Error",
         description: "Failed to submit form. Please try again later.",

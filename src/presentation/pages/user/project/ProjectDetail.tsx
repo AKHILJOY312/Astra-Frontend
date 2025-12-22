@@ -1,6 +1,6 @@
 // src/presentation/pages/user/ProjectDetail.tsx
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 import ChannelSidebar from "@/presentation/components/user/common/ChannelSidebar";
@@ -22,7 +22,7 @@ export default function ProjectDetail() {
       const project = projects.find((p) => p.id === projectId);
       if (project) dispatch(setCurrentProject(project));
     }
-  }, [projectId, projects]);
+  }, [projectId, projects, dispatch]);
 
   return (
     <div className="h-screen flex flex-col overflow-hidden">

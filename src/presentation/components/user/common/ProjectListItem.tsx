@@ -1,5 +1,5 @@
 // src/presentation/components/user/layout/ProjectListItem.tsx
-import { ChevronRight, Users, Lock, Globe } from "lucide-react";
+import { ChevronRight, Lock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Project } from "@/domain/entities/project/Project";
 import { useSelector } from "react-redux";
@@ -47,7 +47,7 @@ export default function ProjectListItem({
         >
           {project.projectName[0].toUpperCase()}
         </div>
-        {project?.isPrivate && (
+        {project?.imageUrl && (
           <Lock className="absolute -bottom-1 -right-1 w-4 h-4 bg-gray-900 text-white rounded-full p-0.5" />
         )}
       </div>

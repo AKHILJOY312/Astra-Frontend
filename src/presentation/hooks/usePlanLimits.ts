@@ -1,5 +1,5 @@
 // src/presentation/hooks/usePlanLimits.ts
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { container } from "../../di/container";
 import { TYPES } from "../../di/types";
@@ -25,7 +25,7 @@ export const usePlanLimits = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const loadPlanData = async () => {
+  const loadPlanData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -40,16 +40,17 @@ export const usePlanLimits = () => {
       if (limitsData.currentProjects >= limitsData.maxProjects) {
         dispatch(openUpgradePlanModal());
       }
-    } catch (err: any) {
+    } catch (error) {
+      const err = error as Error;
       setError(err.message || "Failed to load plan limits");
     } finally {
       setLoading(false);
     }
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     loadPlanData();
-  }, []);
+  }, [loadPlanData]);
 
   // re-check on projects change
   useEffect(() => {

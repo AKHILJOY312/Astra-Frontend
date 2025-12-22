@@ -1,6 +1,11 @@
 import axios from "axios";
 import { tokenService } from "./tokenService";
 
+type FailedQueueItem = {
+  resolve: (token: string | null) => void;
+  reject: (error: unknown) => void;
+};
+
 const api = axios.create({
   baseURL: "/api",
   withCredentials: true,
@@ -26,13 +31,14 @@ api.interceptors.request.use((config) => {
 
 // Handle refresh logic safely (no Redux imports)
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: FailedQueueItem[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
-  failedQueue.forEach((prom) => {
-    if (error) prom.reject(error);
-    else prom.resolve(token);
+const processQueue = (error: unknown, token: string | null = null) => {
+  failedQueue.forEach(({ resolve, reject }) => {
+    if (error) reject(error);
+    else resolve(token);
   });
+
   failedQueue = [];
 };
 

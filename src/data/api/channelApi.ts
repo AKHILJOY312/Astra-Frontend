@@ -1,7 +1,10 @@
 import api from "../../lib/apicaller";
-import type { EditChannelDTO } from "@/application/repo/IChannelRepository";
+import type {
+  CreateChannelDTO,
+  EditChannelDTO,
+} from "@/application/repo/IChannelRepository";
 
-export const createChannel = (projectId: string, payload: any) =>
+export const createChannel = (projectId: string, payload: CreateChannelDTO) =>
   api.post(`/projects/${projectId}/channels`, payload);
 
 export const getChannels = (projectId: string) =>

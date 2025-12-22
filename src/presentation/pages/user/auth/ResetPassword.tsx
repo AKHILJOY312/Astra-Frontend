@@ -85,6 +85,7 @@ export default function ResetPasswordPage() {
         setError((result.payload as string) || "Failed to reset password");
       }
     } catch (err) {
+      console.log(err);
       setError("An unexpected error occurred");
     } finally {
       setIsLoading(false);

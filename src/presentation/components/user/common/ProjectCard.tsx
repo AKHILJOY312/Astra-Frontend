@@ -1,5 +1,5 @@
 // src/presentation/components/user/project/ProjectCard.tsx
-import { Users, MessageSquare, Lock, Globe } from "lucide-react";
+// import { Users, MessageSquare, Lock, Globe } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Project } from "@/domain/entities/project/Project";
 

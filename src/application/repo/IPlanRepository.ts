@@ -1,6 +1,27 @@
 import type { Plan } from "@/domain/entities/plan/Plan";
 import type { PlanLimits } from "../use-cases";
 
+export interface PlanResponseDTO {
+  id: string;
+  name: string;
+  description?: string;
+
+  price: number;
+  finalAmount: number;
+  currency: "INR" | "USD" | "EUR";
+  billingCycle: "monthly" | "yearly";
+
+  features?: string[];
+
+  maxProjects: number;
+  maxMembersPerProject: number;
+
+  isActive: boolean;
+
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface IPlanRepository {
   getPlans(
     page: number,

@@ -8,6 +8,7 @@ import {
   TableRow,
 } from "../../ui/table";
 import Badge from "../../ui/badge/Badge";
+import type { ButtonHTMLAttributes, PropsWithChildren } from "react";
 
 // --- DI SETUP (Place this outside the component or use a custom hook) ---
 import { container, TYPES } from "@/di/container";
@@ -111,11 +112,15 @@ export default function UsersList() {
         total: result.total,
         totalPages: result.totalPages,
       }));
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Failed to fetch users:", err);
+
+      const message =
+        err instanceof Error ? err.message : "Failed to load users.";
+
       setListState((prev) => ({
         ...prev,
-        error: err.message || "Failed to load users.",
+        error: message,
       }));
     } finally {
       setListState((prev) => ({ ...prev, loading: false }));
@@ -139,12 +144,12 @@ export default function UsersList() {
 
       if (action.type === "status") {
         const newStatus = action.newValue as "active" | "blocked";
-        const dto = await blockUserUseCase.execute(action.user.id);
+        await blockUserUseCase.execute(action.user.id);
         updatedUser = { ...action.user, status: newStatus };
       } else {
         // type === 'role'
-        const newRoleIsAdmin = action.newValue === "admin";
-        const dto = await assignRoleUseCase.execute(action.user.id);
+        // const newRoleIsAdmin = action.newValue === "admin";
+        await assignRoleUseCase.execute(action.user.id);
         updatedUser = {
           ...action.user,
           role: action.newValue as "admin" | "user",
@@ -163,11 +168,13 @@ export default function UsersList() {
       console.log(
         `Action successful: ${action.type} updated for user ${updatedUser.name}`
       );
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(`Failed to perform ${action.type} action:`, err);
+      const message =
+        err instanceof Error ? err.message : "Failed to perform action";
       setListState((prev) => ({
         ...prev,
-        error: `Action failed: ${err.message}`,
+        error: `Action failed: ${message}`,
       }));
     } finally {
       setModalAction(null); // Close modal regardless of success/failure
@@ -240,7 +247,7 @@ export default function UsersList() {
   } //management
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/[0.03]">
+    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/5 dark:bg-white/3">
       {/* Displaying pagination summary */}
       <SearchBar
         onSearchChange={handleSearchChange}
@@ -413,8 +420,9 @@ export default function UsersList() {
     </div>
   );
 }
+type ButtonProps = PropsWithChildren<ButtonHTMLAttributes<HTMLButtonElement>>;
 
-const Button = (props: any) => (
+const Button: React.FC<ButtonProps> = (props) => (
   <button
     {...props}
     className={

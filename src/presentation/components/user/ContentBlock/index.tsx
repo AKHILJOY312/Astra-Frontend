@@ -1,7 +1,7 @@
 import { useRef, useEffect } from "react";
 import { Row, Col } from "antd";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+// import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import type { ContentBlockProps } from "./types";
 import { Button } from "../common/Button/index";

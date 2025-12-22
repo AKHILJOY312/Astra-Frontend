@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera, Trash2, Edit, User, Shield, Calendar } from "lucide-react";
+import { Camera, Trash2, User, Shield, Calendar } from "lucide-react";
 
 import { useAppDispatch, useAppSelector } from "@/presentation/redux/hooks";
 import {

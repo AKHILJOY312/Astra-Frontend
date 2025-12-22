@@ -5,18 +5,29 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "@/presentation/redux/thunk/authThunks";
 import type { AppDispatch, RootState } from "@/presentation/redux/store/store";
 import { Eye, EyeOff, AlertCircle, Loader2 } from "lucide-react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage, type FormikHelpers } from "formik";
 import { loginSchema } from "@/presentation/yup/AuthSchema";
+
+interface AdminLoginFormValues {
+  email: string;
+  password: string;
+  server?: string;
+}
 
 export default function AdminLoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { loading } = useSelector((state: RootState) => state.auth);
+  const initialValues: AdminLoginFormValues = {
+    email: "",
+    password: "",
+    server: undefined,
+  };
 
   const handleSubmit = async (
-    values: { email: string; password: string },
-    { setFieldError }: any
+    values: AdminLoginFormValues,
+    { setFieldError }: FormikHelpers<AdminLoginFormValues>
   ) => {
     try {
       await dispatch(
@@ -28,10 +39,14 @@ export default function AdminLoginPage() {
       ).unwrap();
 
       navigate("/admin/dashboard");
-    } catch (err: any) {
-      setFieldError("server", err || "Invalid admin credentials");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Invalid admin credentials";
+
+      setFieldError("server", message);
     }
   };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-purple-50 via-pink-50 to-blue-50 p-4">
       <div className="w-full max-w-md">
@@ -62,7 +77,7 @@ export default function AdminLoginPage() {
           </div>
 
           <Formik
-            initialValues={{ email: "", password: "", server: undefined }}
+            initialValues={initialValues}
             validationSchema={loginSchema}
             onSubmit={handleSubmit}
           >

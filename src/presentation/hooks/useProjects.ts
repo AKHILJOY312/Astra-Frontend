@@ -58,7 +58,8 @@ export const useProjects = () => {
           search: params?.search ?? search,
         });
         dispatch(setProjects(response));
-      } catch (err: any) {
+      } catch (err) {
+        console.error(err);
         dispatch(setProjectError("Failed to load projects"));
       }
     },

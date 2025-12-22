@@ -1,3 +1,9 @@
+export interface VerifyPaymentDTO {
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
+  razorpaySignature: string;
+}
+
 export interface IUserSubscriptionRepository {
   createPendingSubscription(data: {
     planId: string;

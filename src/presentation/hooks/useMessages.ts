@@ -32,7 +32,7 @@ export function useMessages(
     dispatch(clearTextMessages());
     setCursor(null);
     setHasMore(true);
-  }, [projectId]);
+  }, [projectId, dispatch]);
 
   // Main logic
   useEffect(() => {
@@ -55,7 +55,7 @@ export function useMessages(
           setHasMore(false);
         }
 
-        // 🔥 Scroll to bottom on first load
+        //  Scroll to bottom on first load
         setTimeout(() => {
           scrollRef.current?.scrollTo({
             top: scrollRef.current.scrollHeight,
@@ -88,7 +88,7 @@ export function useMessages(
       unsubscribe?.();
       messageGateway.leaveChannel?.(channelId);
     };
-  }, [channelId, channelExists, projectId]);
+  }, [channelId, channelExists, projectId, dispatch]);
 
   const loadOlderMessages = async () => {
     if (!cursor || !hasMore) return;

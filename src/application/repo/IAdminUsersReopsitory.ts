@@ -1,4 +1,4 @@
-import type { User, UserModal } from "@/domain/entities/user/User";
+import type { UserModal } from "@/domain/entities/user/User";
 export interface AdminUserListResult {
   users: UserModal[];
   page: number;

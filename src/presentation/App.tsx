@@ -1,11 +1,5 @@
-import { lazy, Suspense, useEffect } from "react";
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-  Navigate,
-  useNavigate,
-} from "react-router-dom";
+import { lazy, Suspense, useEffect, type ComponentType } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { loadUser } from "@/presentation/redux/thunk/authThunks";
 import type { AppDispatch } from "@/presentation/redux/store/store";
@@ -28,17 +22,26 @@ import SocketInitializer from "./components/user/common/SocketInitializer";
 
 const pages = import.meta.glob("./pages/**/*.tsx");
 
-const safeLazy = (importer: () => Promise<any>) => {
-  return lazy(() =>
-    importer().then((module: any) => {
-      const Component = module.default || Object.values(module)[0];
-      if (!Component) {
-        console.error("No component exported from", importer);
-        return { default: () => <div>Component failed to load</div> };
-      }
-      return { default: Component };
-    })
-  );
+type LazyModule = { default: ComponentType } | Record<string, ComponentType>;
+
+const FallbackComponent: ComponentType = () => (
+  <div>Component failed to load</div>
+);
+
+const safeLazy = (importer: () => Promise<unknown>) => {
+  return lazy(async () => {
+    const module = (await importer()) as LazyModule;
+
+    const Component =
+      "default" in module ? module.default : Object.values(module)[0];
+
+    if (!Component) {
+      console.error("No component exported from lazy module");
+      return { default: FallbackComponent };
+    }
+
+    return { default: Component };
+  });
 };
 
 export default function App() {
@@ -90,9 +93,9 @@ export default function App() {
               case "app":
                 element = <UserLayout>{element}</UserLayout>;
                 break;
-              default:
-                element = element;
-                break;
+              // default:
+              //   element = element;
+              //   break;
             }
 
             return <Route key={r.path} path={r.path} element={element} />;

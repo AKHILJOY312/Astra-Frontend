@@ -2,9 +2,9 @@ import type {
   AdminUserListResult,
   IAdminUsersRepository,
 } from "@/application/repo/IAdminUsersReopsitory";
-import * as adminUserApi from "../api/AdminUsersApi";
+import * as adminUserApi from "../api/adminUsersApi";
 import { userResponseToModal } from "../mappers/userMapper";
-import type { User, UserModal } from "@/domain/entities/user/User";
+import type { UserModal } from "@/domain/entities/user/User";
 
 export class AdminUserRepositoryImpl implements IAdminUsersRepository {
   async listUsers(

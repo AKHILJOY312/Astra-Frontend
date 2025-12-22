@@ -44,6 +44,7 @@ export default function PlanDetailModal({ plan, open, onClose }: Props) {
       onClose();
       setDeleteConfirmOpen(false);
     } catch (err) {
+      console.error(err);
       alert("Failed to delete plan. Please try again.");
     } finally {
       setIsDeleting(false);

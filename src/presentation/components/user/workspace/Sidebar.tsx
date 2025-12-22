@@ -3,13 +3,14 @@ import {
   Home,
   MessagesSquare,
   Bell,
-  MoreHorizontal,
+  // MoreHorizontal,
   Plus,
   ChevronDown,
   LogOut,
   Settings,
   Hash,
-  Globe,
+  type LucideIcon,
+  // Globe,
 } from "lucide-react";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "@/presentation/redux/store/store";
@@ -80,7 +81,7 @@ export default function SlackSidebar() {
         {/* Hover tooltip */}
         <div className="pointer-events-none absolute left-full top-0 ml-2 whitespace-nowrap rounded bg-black px-2 py-1 text-xs text-white opacity-0 transition-opacity group-hover:opacity-100">
           Acme Corp
-          <div className="absolute left-[-4px] top-3 border-4 border-transparent border-r-black" />
+          <div className="absolute -left-1 top-3 border-4 border-transparent border-r-black" />
         </div>
 
         {/* Optional dropdown indicator */}
@@ -137,7 +138,7 @@ export default function SlackSidebar() {
           className="flex h-12 w-12 items-center justify-center rounded-lg transition-all hover:rounded-xl hover:bg-white/10"
         >
           <div className="relative">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 text-lg font-bold text-white">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-emerald-400 to-teal-600 text-lg font-bold text-white">
               {user.initials}
             </div>
             <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[#381349] bg-green-500" />
@@ -156,8 +157,8 @@ export default function SlackSidebar() {
             <div className="p-3">
               {/* User info */}
               <div className="flex items-center gap-3 rounded-lg p-3 hover:bg-white/10">
-                <div className="relative flex-shrink-0">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-emerald-400 to-teal-600 text-xl font-bold text-white">
+                <div className="relative shrink-0">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br from-emerald-400 to-teal-600 text-xl font-bold text-white">
                     {user.initials}
                   </div>
                   <div className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-[#2f2f2f] bg-green-500" />
@@ -200,7 +201,7 @@ export default function SlackSidebar() {
 
 // Reusable Sidebar Button Component (same style as your reference)
 interface SidebarButtonProps {
-  icon: any;
+  icon: LucideIcon;
   label: string;
   isActive?: boolean;
   onClick?: () => void;
@@ -214,11 +215,11 @@ function SidebarButton({
   onClick,
   route,
 }: SidebarButtonProps) {
-  const navigate = useNavigate(); // ⬅️ Add this
+  const navigate = useNavigate();
 
   function handleClick() {
-    if (route) navigate(route); // ⬅️ Navigate if route is given
-    if (onClick) onClick(); // Keep your active state logic
+    if (route) navigate(route);
+    if (onClick) onClick();
   }
   return (
     <button

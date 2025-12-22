@@ -2,6 +2,7 @@ import type { UpdateProjectDTO } from "@/application/use-cases/project/UpdatePro
 import type { IProjectRepository } from "../../application/repo/IProjectRepository";
 import * as projectApi from "../api/projectApi";
 import { projectResponseToEntity } from "../mappers/projectMapper";
+import { AxiosError } from "axios";
 
 export class ProjectRepositoryImpl implements IProjectRepository {
   async create(dto: {
@@ -59,8 +60,13 @@ export class ProjectRepositoryImpl implements IProjectRepository {
       }
 
       return projectResponseToEntity(response.data.data);
-    } catch (err: any) {
-      if (err.response?.status === 404) return null;
+    } catch (err: unknown) {
+      if (err instanceof AxiosError) {
+        if (err.response?.status === 404) {
+          return null;
+        }
+      }
+
       throw err;
     }
   }

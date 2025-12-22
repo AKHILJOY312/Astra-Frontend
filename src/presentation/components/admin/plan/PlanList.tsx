@@ -31,7 +31,7 @@ export default function PlanList() {
 
     initialPageParam: 1,
 
-    getNextPageParam: (lastPage, allPages, allPagesCount) => {
+    getNextPageParam: (lastPage, allPages) => {
       if (lastPage.data.length < 12) {
         return undefined;
       }

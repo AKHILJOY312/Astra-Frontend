@@ -1,71 +1,80 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
+
+interface BackendError {
+  message: string;
+}
 
 const VerifyEmail: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const type = searchParams.get("type");
   const navigate = useNavigate();
+
+  const token = searchParams.get("token");
+  const type = searchParams.get("type"); // "reset" or null/undefined for email verification
+
   const [status, setStatus] = useState<"loading" | "success" | "error">(
     "loading"
   );
   const [message, setMessage] = useState("Verifying your email...");
 
   useEffect(() => {
-    const token = searchParams.get("token");
-    let timer: ReturnType<typeof setTimeout>;
+    // Early exit if no token
     if (!token) {
       setStatus("error");
       setMessage("Invalid or missing verification token.");
       return;
     }
 
-    const verifyEmail = async () => {
+    let redirectTimer: ReturnType<typeof setTimeout> | undefined;
+
+    const verify = async () => {
       try {
-        await new Promise((res) => setTimeout(res, 1500));
+        // Small artificial delay for better UX
+        await new Promise((resolve) => setTimeout(resolve, 1500));
 
         if (type === "reset") {
-          const res = await axios.get(
-            `/api/auth/verify-reset-token?token=${token}`
-          );
+          await axios.get(`/api/auth/verify-reset-token?token=${token}`);
           setStatus("success");
           setMessage("Reset link verified! Redirecting...");
         } else {
-          const res = await axios.get(`/api/auth/verify-email?token=${token}`);
+          await axios.get(`/api/auth/verify-email?token=${token}`);
           setStatus("success");
           setMessage("Email verified successfully!");
         }
 
         // Redirect after 3 seconds
-
-        timer = setTimeout(() => {
+        redirectTimer = setTimeout(() => {
           if (type === "reset") {
             navigate(`/reset-password?token=${token}`);
           } else {
             navigate("/login");
           }
         }, 3000);
-      } catch (err: any) {
+      } catch (error) {
+        const axiosError = error as AxiosError<BackendError>;
         setStatus("error");
         setMessage(
-          err.response?.data?.message ||
-            "Verification failed. Link may be expired or invalid."
+          axiosError.response?.data?.message ||
+            "Verification failed. The link may be expired or invalid."
         );
       }
     };
 
-    verifyEmail();
+    verify();
 
-    return () => clearTimeout(timer);
-  }, [searchParams, navigate]);
+    // Cleanup timer on unmount or re-run
+    return () => {
+      if (redirectTimer) clearTimeout(redirectTimer);
+    };
+  }, [token, type, navigate]); // Added 'type' to dependencies → warning fixed
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-indigo-50 to-purple-50">
+    <div className="flex items-center justify-center min-h-screen bg-linear-to-br from-indigo-50 to-purple-50">
       <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-xl text-center space-y-6">
-        {/* Icon */}
+        {/* Status Icon */}
         <div
-          className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center
-          ${
+          className={`mx-auto w-16 h-16 rounded-full flex items-center justify-center ${
             status === "loading"
               ? "bg-blue-100"
               : status === "success"
@@ -128,11 +137,9 @@ const VerifyEmail: React.FC = () => {
           </p>
         </div>
 
-        {/* Auto-redirect hint */}
+        {/* Redirect hint */}
         {status === "success" && (
-          <p className="text-xs text-gray-500">
-            Redirecting to login in 3 seconds...
-          </p>
+          <p className="text-xs text-gray-500">Redirecting in 3 seconds...</p>
         )}
       </div>
     </div>

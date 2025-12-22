@@ -3,18 +3,28 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
-  DialogFooter,
+  // DialogDescription,
+  // DialogFooter,
   DialogOverlay,
   DialogClose,
 } from "@/presentation/components/ui/dialogue/index";
 import Button from "@/presentation/components/ui/button/Button";
 import { X } from "lucide-react";
+import type { Plan } from "@/domain/entities/plan/Plan";
+
+interface PaymentDetails {
+  planName?: string;
+  amount?: number; // in paise
+  paymentId?: string;
+  date?: string;
+  errorMessage?: string;
+  plan?: Plan;
+}
 
 interface Props {
   open: boolean;
   status: "success" | "failed" | null;
-  details?: any;
+  details: PaymentDetails;
   onClose: () => void;
   onRetry?: () => void;
 }
@@ -31,9 +41,9 @@ export const PaymentStatusModal: React.FC<Props> = ({
   return (
     <Dialog open={open} onOpenChange={onClose}>
       {/* BACKDROP BLUR */}
-      <DialogOverlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9998]" />
+      <DialogOverlay className="fixed inset-0 bg-black/40 backdrop-blur-sm z-9998" />
 
-      <DialogContent className="fixed z-[9999] max-w-md bg-white dark:bg-gray-900 p-6 rounded-xl shadow-2xl">
+      <DialogContent className="fixed z-9999 max-w-md bg-white dark:bg-gray-900 p-6 rounded-xl shadow-2xl">
         {/* CLOSE BUTTON */}
         <DialogClose className="absolute right-4 top-4 text-gray-500 hover:text-gray-800">
           <X className="w-5 h-5" />
@@ -59,7 +69,7 @@ export const PaymentStatusModal: React.FC<Props> = ({
                 <b>Plan:</b> {details?.planName}
               </p>
               <p>
-                <b>Amount:</b> ₹{details?.amount / 100}
+                <b>Amount:</b> ₹{(details.amount || 0) / 100}
               </p>
               <p>
                 <b>Payment ID:</b> {details?.paymentId}

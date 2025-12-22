@@ -2,11 +2,63 @@ import { container } from "@/di/container";
 import { TYPES } from "@/di/types";
 import { CreateRazorpayOrderUseCase } from "@/application/use-cases/upgradeplan/CreateRazorpayOrderUseCase";
 import { VerifyPaymentUseCase } from "@/application/use-cases/upgradeplan/VerifyPaymentUseCase";
-
 import { useState } from "react";
-export const loadRazorpay = () => {
+
+// Razorpay handler response
+interface RazorpayResponse {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+
+// Razorpay options
+interface RazorpayOptions {
+  key: string;
+  amount: number | string;
+  currency: string;
+  name: string;
+  description: string;
+  order_id: string;
+  handler: (response: RazorpayResponse) => void;
+  modal: {
+    ondismiss: () => void;
+  };
+  theme: {
+    color: string;
+  };
+}
+
+// Minimal Razorpay instance
+interface RazorpayInstance {
+  open: () => void;
+}
+
+// Expected order from your backend use case
+interface RazorpayOrder {
+  keyId: string;
+  amount: number | string;
+  currency: string;
+  planName: string;
+  orderId: string;
+}
+
+// Payload for verification
+interface VerifyPaymentPayload {
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
+  razorpaySignature: string;
+}
+
+// Proper global augmentation for Razorpay (place this at the top level of the file)
+declare global {
+  interface Window {
+    Razorpay: new (options: RazorpayOptions) => RazorpayInstance;
+  }
+}
+
+export const loadRazorpay = (): Promise<boolean> => {
   return new Promise<boolean>((resolve) => {
-    if ((window as any).Razorpay) return resolve(true);
+    if (window.Razorpay) return resolve(true);
 
     const script = document.createElement("script");
     script.src = "https://checkout.razorpay.com/v1/checkout.js";
@@ -21,12 +73,25 @@ export const useRazorpay = () => {
   const [paymentStatus, setPaymentStatus] = useState<
     "success" | "failed" | null
   >(null);
-  const [paymentDetails, setPaymentDetails] = useState<any>({});
+
+  // Discriminated union for payment details
+  type PaymentDetails =
+    | {
+        type: "success";
+        planName: string;
+        amount: number;
+        paymentId: string;
+      }
+    | { type: "error"; errorMessage: string }
+    | { type: "initial" };
+
+  const [paymentDetails, setPaymentDetails] = useState<PaymentDetails>({
+    type: "initial",
+  });
 
   const createOrder = container.get<CreateRazorpayOrderUseCase>(
     TYPES.CreateRazorpayOrderUseCase
   );
-
   const verifyPayment = container.get<VerifyPaymentUseCase>(
     TYPES.VerifyPaymentUseCase
   );
@@ -39,46 +104,51 @@ export const useRazorpay = () => {
         return;
       }
 
-      if (!(window as any).Razorpay) {
+      if (!window.Razorpay) {
         alert("Razorpay SDK did not initialize");
         return;
       }
 
-      const order = await createOrder.execute(planId);
+      const order: RazorpayOrder = await createOrder.execute(planId);
 
-      const options = {
+      const options: RazorpayOptions = {
         key: order.keyId,
         amount: order.amount,
         currency: order.currency,
         name: "Astra",
         description: `Upgrade to ${order.planName}`,
         order_id: order.orderId,
-        handler: async (response: any) => {
+        handler: async (response: RazorpayResponse) => {
           try {
             await verifyPayment.execute({
               razorpayOrderId: response.razorpay_order_id,
               razorpayPaymentId: response.razorpay_payment_id,
               razorpaySignature: response.razorpay_signature,
-            });
+            } as VerifyPaymentPayload);
+
             setPaymentDetails({
+              type: "success",
               planName: order.planName,
-              amount: order.amount,
+              amount: Number(order.amount),
               paymentId: response.razorpay_payment_id,
             });
             setPaymentStatus("success");
             setModalOpen(true);
-          } catch (err: any) {
+          } catch (err: unknown) {
+            const message =
+              err instanceof Error ? err.message : "Verification failed";
+            setPaymentDetails({ type: "error", errorMessage: message });
             setPaymentStatus("failed");
-            setPaymentDetails({
-              errorMessage: err.message || "Verification failed",
-            });
             setModalOpen(true);
           }
         },
         modal: {
           ondismiss: () => {
+            setPaymentDetails({
+              type: "error",
+              errorMessage: "Payment cancelled",
+            });
             setPaymentStatus("failed");
-            setPaymentDetails({ errorMessage: "Payment cancelled" });
             setModalOpen(true);
           },
         },
@@ -87,11 +157,13 @@ export const useRazorpay = () => {
         },
       };
 
-      const rzp = new (window as any).Razorpay(options);
+      const rzp = new window.Razorpay(options);
       rzp.open();
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Something went wrong";
+      setPaymentDetails({ type: "error", errorMessage: message });
       setPaymentStatus("failed");
-      setPaymentDetails({ errorMessage: error.message });
       setModalOpen(true);
     }
   };

@@ -10,12 +10,17 @@ export const login = (credentials: {
     ? "/admin/auth/login"
     : "/auth/login";
 
-  const { isAdminLogin, ...payload } = credentials;
+  const { ...payload } = credentials;
 
   return api.post(endpoint, payload);
 };
 
-export const register = (data: any) => api.post("/auth/register", data);
+export const register = (data: {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}) => api.post("/auth/register", data);
 
 export const loadMe = () => api.get("/auth/me");
 

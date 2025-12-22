@@ -2,10 +2,10 @@
 
 import { useState, useRef, useEffect } from "react";
 import {
-  MessageCircle,
+  // MessageCircle,
   Circle,
-  Radio,
-  Users,
+  // Radio,
+  // Users,
   Settings,
   LogOut,
   User as UserIcon,
@@ -35,7 +35,7 @@ export default function ControllerBar() {
   const user = useAppSelector((state) => state.auth.user);
 
   // 2. Determine Profile Image URL with Default Fallback
-  const profileImageUrl = user?.profileImage || DEFAULT_PROFILE_IMAGE;
+  const profileImageUrl = DEFAULT_PROFILE_IMAGE;
   const userName = user?.name || user?.email || "Guest";
 
   // close when clicking outside

@@ -1,5 +1,6 @@
 import type { IProjectMembershipRepository } from "@/application/repo/IProjectMembershipRepository";
 import { TYPES } from "@/di/types";
+import type { ProjectMember } from "@/domain/entities/project/ProjectMember ";
 import { inject, injectable } from "inversify";
 
 // ProjectMemberView
@@ -24,7 +25,7 @@ export class GetProjectMembersUseCase {
   async execute(projectId: string): Promise<ProjectMemberView[]> {
     const members = await this.membershipRepo.getMembers(projectId);
 
-    return members.map((m: any) => ({
+    return members.map((m: ProjectMember) => ({
       id: m.id,
       role: m.role,
       joinedAt: m.joinedAt,

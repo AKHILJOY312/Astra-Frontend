@@ -1,7 +1,7 @@
 // src/pages/AuthSuccess.tsx
 import { useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/presentation/redux/thunk/authThunks";
 import { useAppDispatch } from "@/presentation/redux/hooks";
 

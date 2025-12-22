@@ -1,5 +1,5 @@
 // src/presentation/components/user/modals/CreateProjectModal.tsx
-import { X, Image, Loader2 } from "lucide-react";
+import { X, Loader2 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   closeCreateProjectModal,
@@ -19,6 +19,16 @@ export default function CreateProjectModal() {
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
+  interface BackendError {
+    response?: {
+      data?: {
+        error?: string;
+        upgradeRequired?: boolean;
+      };
+    };
+    message?: string;
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
@@ -31,32 +41,31 @@ export default function CreateProjectModal() {
       );
       setName("");
       setDescription("");
+      setImageUrl(null);
       dispatch(closeCreateProjectModal());
-    } catch (error) {
+    } catch (err: unknown) {
       let backendMessage = "Failed to create project";
       let upgradeRequired = false;
 
-      // Safe narrowing
-      if (typeof error === "object" && error !== null) {
-        const err = error as any;
+      // Narrow the type safely
+      if (typeof err === "object" && err !== null) {
+        const e = err as BackendError;
 
-        const res = err.response?.data;
+        const res = e.response?.data;
         if (res?.error) backendMessage = res.error;
         if (res?.upgradeRequired === true) upgradeRequired = true;
 
-        // Fallback to general message
-        if (err.message && !res?.error) {
-          backendMessage = err.message;
+        if (e.message && !res?.error) {
+          backendMessage = e.message;
         }
       }
 
-      // Trigger upgrade modal
       if (upgradeRequired) {
         dispatch(openUpgradePlanModal());
       }
 
       dispatch(setProjectError(backendMessage));
-      throw error;
+      throw err;
     }
   };
 

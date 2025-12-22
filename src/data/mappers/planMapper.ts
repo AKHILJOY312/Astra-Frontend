@@ -1,6 +1,7 @@
+import type { PlanResponseDTO } from "@/application/repo/IPlanRepository";
 import { Plan, type PlanProps } from "@/domain/entities/plan/Plan";
 
-export const planResponseToEntity = (raw: any): Plan => {
+export const planResponseToEntity = (raw: PlanResponseDTO): Plan => {
   const props: PlanProps = {
     id: raw.id,
     name: raw.name,

@@ -1,4 +1,5 @@
 // src/data/repositories/AuthRepositoryImpl.ts
+import type { UserRegisterDTO } from "@/application/use-cases/auth";
 import type { IAuthRepository } from "../../application/repo/IAuthRepository";
 import type { User } from "../../domain/entities/user/User";
 import * as authApi from "../api/authApi";
@@ -19,7 +20,7 @@ export class AuthRepositoryImpl implements IAuthRepository {
     };
   }
 
-  async register(data: any) {
+  async register(data: UserRegisterDTO) {
     const { data: res } = await authApi.register(data);
     return { message: res.message };
   }

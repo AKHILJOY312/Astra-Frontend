@@ -6,7 +6,7 @@ import { useProjects } from "@/presentation/hooks/useProjects";
 import { useUi } from "@/presentation/hooks/useUi";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { updateProjectSuccess } from "@/presentation/redux/slice/projectSlice";
+// import { updateProjectSuccess } from "@/presentation/redux/slice/projectSlice";
 
 const EditProjectSchema = Yup.object({
   projectName: Yup.string()

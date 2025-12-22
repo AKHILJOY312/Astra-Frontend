@@ -2,6 +2,20 @@ import { Project } from "../../domain/entities/project/Project";
 import type { CreateProjectDTO } from "../use-cases/index";
 import type { UpdateProjectDTO } from "../use-cases/project/UpdateProjectUseCase";
 
+// src/data/dto/ProjectResponseDTO.ts
+export interface ProjectResponseDTO {
+  id: string;
+
+  projectName: string;
+  description?: string;
+  imageUrl?: string | null;
+
+  ownerId: string;
+
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface IProjectRepository {
   create(dto: CreateProjectDTO): Promise<Project>;
 

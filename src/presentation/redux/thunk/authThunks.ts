@@ -1,6 +1,7 @@
 // src/presentation/redux/thunks/authThunks.ts
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { container, TYPES } from "../../../di/container";
+import { tokenService } from "@/lib/tokenService";
 
 import {
   LoginUseCase,
@@ -11,8 +12,17 @@ import {
   ResetPasswordUseCase,
   VerifyEmailUseCase,
 } from "../../../application/use-cases/auth/index";
-import { tokenService } from "@/lib/tokenService";
-// Resolve once (singleton)
+
+// Define a base error interface to replace 'any'
+interface ApiError {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+}
+
+// Resolve singletons
 const loginUC = container.get<LoginUseCase>(TYPES.LoginUseCase);
 const registerUC = container.get<RegisterUseCase>(TYPES.RegisterUseCase);
 const loadUserUC = container.get<LoadUserUseCase>(TYPES.LoadUserUseCase);
@@ -31,8 +41,9 @@ export const loginUser = createAsyncThunk(
   ) => {
     try {
       return await loginUC.execute(credentials);
-    } catch (e: any) {
-      return rejectWithValue(e.response?.data?.message || "Login failed");
+    } catch (e) {
+      const error = e as ApiError;
+      return rejectWithValue(error.response?.data?.message || "Login failed");
     }
   }
 );
@@ -42,13 +53,15 @@ export const loadUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       return await loadUserUC.execute();
-    } catch (e: any) {
-      return rejectWithValue(e.response?.data?.message || "Not authenticated");
+    } catch (e) {
+      const error = e as ApiError;
+      return rejectWithValue(
+        error.response?.data?.message || "Not authenticated"
+      );
     }
   }
 );
 
-// 1. Register
 export const registerUser = createAsyncThunk(
   "auth/register",
   async (
@@ -62,40 +75,39 @@ export const registerUser = createAsyncThunk(
   ) => {
     try {
       return await registerUC.execute(data);
-    } catch (e: any) {
+    } catch (e) {
+      const error = e as ApiError;
       return rejectWithValue(
-        e.response?.data?.message || "Registration failed"
+        error.response?.data?.message || "Registration failed"
       );
     }
   }
 );
 
-// 2. Logout
 export const logoutUser = createAsyncThunk(
   "auth/logout",
   async (_, { rejectWithValue }) => {
     try {
       await logoutUC.execute();
-    } catch (e: any) {
-      // Even if API fails we want local logout
-      return rejectWithValue(e.response?.data?.message || "Logout failed");
+    } catch (e) {
+      const error = e as ApiError;
+      return rejectWithValue(error.response?.data?.message || "Logout failed");
     }
   }
 );
 
-// 3. Forgot Password
 export const forgotPassword = createAsyncThunk(
   "auth/forgotPassword",
   async (email: string, { rejectWithValue }) => {
     try {
       return await forgotUC.execute(email);
-    } catch (e: any) {
-      return rejectWithValue(e.response?.data?.message || "Error occurred");
+    } catch (e) {
+      const error = e as ApiError;
+      return rejectWithValue(error.response?.data?.message || "Error occurred");
     }
   }
 );
 
-// 4. Reset Password
 export const resetPassword = createAsyncThunk(
   "auth/resetPassword",
   async (
@@ -104,23 +116,24 @@ export const resetPassword = createAsyncThunk(
   ) => {
     try {
       return await resetUC.execute(token, password);
-    } catch (e: any) {
+    } catch (e) {
+      const error = e as ApiError;
       return rejectWithValue(
-        e.response?.data?.message || "Failed to reset password"
+        error.response?.data?.message || "Failed to reset password"
       );
     }
   }
 );
 
-// 5. Verify Email
 export const verifyEmail = createAsyncThunk(
   "auth/verifyEmail",
   async (token: string, { rejectWithValue }) => {
     try {
       return await verifyUC.execute(token);
-    } catch (e: any) {
+    } catch (e) {
+      const error = e as ApiError;
       return rejectWithValue(
-        e.response?.data?.message || "Verification failed"
+        error.response?.data?.message || "Verification failed"
       );
     }
   }
@@ -130,7 +143,6 @@ export const loginSuccess = createAsyncThunk(
   "auth/loginSuccess",
   async (data: { token: string }) => {
     tokenService.setToken(data.token);
-
     return { token: data.token };
   }
 );

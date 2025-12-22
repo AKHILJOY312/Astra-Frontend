@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import { Formik, Form, Field, FieldArray } from "formik";
+import { Formik, Form, Field, FieldArray, type FieldProps } from "formik";
 import * as Yup from "yup";
 import {
   Dialog,
@@ -157,10 +157,13 @@ export default function PlanFormDialog({ plan, open, onClose }: Props) {
 
       queryClient.invalidateQueries({ queryKey: ["plans"] });
       onClose();
-    } catch (err: any) {
-      // ⚠️ PHASE 3 DEBUG LOG: Full error object on API failure
+    } catch (err: unknown) {
       console.error("DEBUG: Submission failed. Full Error Object:", err);
-      setSubmitError(err?.response?.data?.message || "Failed to save plan");
+
+      const message =
+        err instanceof Error ? err.message : "Failed to save plan";
+
+      setSubmitError(message);
     }
   };
 
@@ -193,7 +196,7 @@ export default function PlanFormDialog({ plan, open, onClose }: Props) {
                 <div>
                   <Label htmlFor="currency">Currency</Label>
                   <Field name="currency">
-                    {({ field, form }: any) => (
+                    {({ field, form }: FieldProps<FormValues["currency"]>) => (
                       <Select
                         value={field.value}
                         onValueChange={(v) => form.setFieldValue("currency", v)}
@@ -232,7 +235,10 @@ export default function PlanFormDialog({ plan, open, onClose }: Props) {
                 <div>
                   <Label htmlFor="billingCycle">Billing Cycle</Label>
                   <Field name="billingCycle">
-                    {({ field, form }: any) => (
+                    {({
+                      field,
+                      form,
+                    }: FieldProps<FormValues["billingCycle"]>) => (
                       <Select
                         value={field.value}
                         onValueChange={(v) =>

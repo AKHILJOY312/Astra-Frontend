@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useMessages } from "@/presentation/hooks/useMessages";
 import { messageGateway } from "@/data/gateway/MessageGateway";

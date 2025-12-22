@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+// import { Outlet } from "react-router-dom";
 import Sidebar from "../workspace/Sidebar";
 import UpgradePlanModal from "../common/UpgradePlanModal";
 import { PlanLimitBanner } from "../common/PlanLimitBanner";

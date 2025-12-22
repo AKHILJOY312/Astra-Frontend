@@ -5,7 +5,7 @@ import { useRazorpay } from "@/presentation/hooks/useRazorpay";
 import { container } from "@/di/container";
 import { TYPES } from "@/di/types";
 import { GetAvailablePlansUseCase } from "@/application/use-cases/plan/user/GetAvailablePlansUseCase";
-import { UpgradePlanUseCase } from "@/application/use-cases/upgradeplan/UpgradePlanUseCase";
+// import { UpgradePlanUseCase } from "@/application/use-cases/upgradeplan/UpgradePlanUseCase";
 import type { Plan } from "@/domain/entities/plan/Plan";
 import { PaymentStatusModal } from "@/presentation/components/ui/modal/PaymentStatusModal";
 
@@ -39,8 +39,9 @@ export default function UpgradePlanPage() {
     try {
       setSelectedPlanId(planId);
       initiatePayment(planId);
-    } catch (err: any) {
-      alert(err?.message || "Something went wrong. Please try again.");
+    } catch (error) {
+      const errors = error as Error;
+      alert(errors?.message || "Something went wrong. Please try again.");
     }
   };
 
@@ -61,7 +62,7 @@ export default function UpgradePlanPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-100 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950 py-16 px-4">
+    <div className="min-h-screen bg-linear-to-br from-purple-50 via-pink-50 to-indigo-100 dark:from-gray-950 dark:via-gray-900 dark:to-purple-950 py-16 px-4">
       {/* Header */}
       <div className="text-center max-w-5xl mx-auto mb-16">
         <h1 className="text-5xl md:text-6xl font-extrabold text-gray-900 dark:text-white mb-6">
@@ -90,7 +91,7 @@ export default function UpgradePlanPage() {
               {/* Most Popular Badge */}
               {isPro && (
                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-20">
-                  <span className="bg-gradient-to-r from-orange-500 to-pink-600 text-white px-6 py-3 rounded-full text-sm font-bold flex items-center gap-2 shadow-2xl">
+                  <span className="bg-linear-to-r from-orange-500 to-pink-600 text-white px-6 py-3 rounded-full text-sm font-bold flex items-center gap-2 shadow-2xl">
                     <Sparkles className="w-5 h-5" />
                     MOST POPULAR
                   </span>
@@ -101,7 +102,7 @@ export default function UpgradePlanPage() {
               <div
                 className={`relative rounded-3xl p-8 h-full overflow-hidden transition-all duration-300 ${
                   isPro
-                    ? "bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600 text-white shadow-2xl ring-4 ring-purple-400/30"
+                    ? "bg-linear-to-br from-purple-600 via-purple-700 to-pink-600 text-white shadow-2xl ring-4 ring-purple-400/30"
                     : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-xl border border-gray-200 dark:border-gray-700"
                 }`}
               >
@@ -163,7 +164,7 @@ export default function UpgradePlanPage() {
                   {plan.features.map((feature, i) => (
                     <li key={i} className="flex items-start gap-3">
                       <Check
-                        className={`w-5 h-5 flex-shrink-0 mt-0.5 ${
+                        className={`w-5 h-5 shrink-0 mt-0.5 ${
                           isPro ? "text-pink-200" : "text-green-500"
                         }`}
                       />
@@ -182,7 +183,7 @@ export default function UpgradePlanPage() {
                   >
                     <li className="flex items-center gap-3">
                       <Check
-                        className={`w-5 h-5 flex-shrink-0 ${
+                        className={`w-5 h-5 shrink-0 ${
                           isPro ? "text-pink-200" : "text-green-500"
                         }`}
                       />
@@ -197,7 +198,7 @@ export default function UpgradePlanPage() {
                     </li>
                     <li className="flex items-center gap-3 mt-3">
                       <Check
-                        className={`w-5 h-5 flex-shrink-0 ${
+                        className={`w-5 h-5 shrink-0 ${
                           isPro ? "text-pink-200" : "text-green-500"
                         }`}
                       />
@@ -222,7 +223,7 @@ export default function UpgradePlanPage() {
                       ? "bg-white text-purple-700 hover:bg-gray-100 shadow-lg"
                       : isFree
                       ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
-                      : "bg-gradient-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 shadow-lg"
+                      : "bg-linear-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 shadow-lg"
                   }`}
                 >
                   {isFree

@@ -1,6 +1,7 @@
+import type { ChannelResponseDTO } from "@/application/repo/IChannelRepository";
 import { Channel, type ChannelProps } from "@/domain/entities/channel/Channel";
 
-export const channelResponseToEntity = (raw: any): Channel => {
+export const channelResponseToEntity = (raw: ChannelResponseDTO): Channel => {
   const props: ChannelProps = {
     id: raw.id,
     projectId: raw.projectId,

@@ -1,5 +1,7 @@
 import { io, Socket } from "socket.io-client";
 
+type NewMessagePayload = Parameters<ServerToClientEvents["message:new"]>[0];
+
 // Define your event payloads once
 interface ServerToClientEvents {
   "message:new": (message: {
@@ -108,8 +110,7 @@ class MessageGateway {
     //   " [MessageGateway.subscribeToNewMessages] Subscribing to 'message:new'"
     // );
 
-    const handler = (msg: any) => {
-      //console.log(" [MessageGateway] Received 'message:new' event:", msg);
+    const handler = (msg: NewMessagePayload) => {
       callback(msg);
     };
 

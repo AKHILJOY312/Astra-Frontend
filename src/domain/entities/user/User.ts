@@ -9,8 +9,9 @@ export interface UserModal extends User {
   createdAt: Date | undefined;
   isVerified: boolean;
   status: "active" | "blocked";
-  image: string;
+  image: string | null;
 }
+
 export interface AuthState {
   user: User | null;
   accessToken: string | null;

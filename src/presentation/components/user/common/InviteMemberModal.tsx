@@ -8,6 +8,17 @@ import { container } from "@/di/container";
 import { TYPES } from "@/di/types";
 import { AddMemberUseCase } from "@/application/use-cases/project/AddMemberUseCase";
 
+interface BackendError {
+  response?: {
+    data?: {
+      error?: string;
+      message?: string;
+    };
+  };
+  message?: string;
+}
+type Role = "member" | "lead" | "manager";
+
 const addMemberUC = container.get<AddMemberUseCase>(TYPES.AddMemberUseCase);
 
 export default function InviteMemberModal() {
@@ -42,12 +53,19 @@ export default function InviteMemberModal() {
         setEmail("");
         setSuccess(false);
       }, 1500);
-    } catch (err: any) {
-      const backendError =
-        err?.response?.data?.error ||
-        err?.response?.data?.message ||
-        err?.message ||
-        "Failed to send invite";
+    } catch (err: unknown) {
+      let backendError = "Failed to send invite";
+
+      if (typeof err === "object" && err !== null) {
+        const e = err as BackendError;
+        backendError =
+          e.response?.data?.error ||
+          e.response?.data?.message ||
+          e.message ||
+          backendError;
+      }
+
+      setError(backendError);
       setError(backendError);
     } finally {
       setLoading(false);
@@ -95,7 +113,7 @@ export default function InviteMemberModal() {
             </label>
             <select
               value={role}
-              onChange={(e) => setRole(e.target.value as any)}
+              onChange={(e) => setRole(e.target.value as Role)}
               className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none"
             >
               <option value="member">Member</option>

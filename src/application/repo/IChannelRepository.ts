@@ -44,6 +44,23 @@ export interface ListProjectChannelsResultDTO {
   channels: Channel[];
 }
 
+export interface ChannelResponseDTO {
+  id: string;
+  projectId: string;
+  channelName: string;
+
+  description?: string;
+  visibleToRoles?: string[];
+  permissionsByRole?: Record<string, "view" | "message" | "manager">;
+
+  lastMessage?: string;
+  unreadCount?: number;
+
+  createdBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface IChannelRepository {
   create(projectId: string, channel: CreateChannelDTO): Promise<Channel>;
 

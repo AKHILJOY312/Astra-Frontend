@@ -14,7 +14,7 @@ const cn = (...inputs: (string | undefined | false)[]) =>
   inputs.filter(Boolean).join(" ");
 
 export default function SlackHeader() {
-  let navigate = useNavigate();
+  const navigate = useNavigate();
   function handleupGrade() {
     navigate("/upgrade");
   }

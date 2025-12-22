@@ -4,26 +4,44 @@ import { useNavigate } from "react-router-dom";
 import { loginUser } from "@/presentation/redux/thunk/authThunks";
 import type { AppDispatch, RootState } from "@/presentation/redux/store/store";
 import { Eye, EyeOff, AlertCircle, Loader2, Lock, Mail } from "lucide-react";
-import { Formik, Form, Field, ErrorMessage } from "formik";
+import { Formik, Form, Field, ErrorMessage, type FormikHelpers } from "formik";
 import { loginSchema } from "@/presentation/yup/AuthSchema";
+
+interface LoginValues {
+  email: string;
+  password: string;
+  server?: string; // optional field for server errors
+}
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { loading } = useSelector((state: RootState) => state.auth);
+  const initialLoginValues: LoginValues = {
+    email: "",
+    password: "",
+    // server is optional, so we can omit it entirely
+  };
   const handleGoogle = () => {
     window.location.href = "api/auth/google";
   };
   const handleSubmit = async (
     values: { email: string; password: string },
-    { setFieldError }: any
+    { setFieldError }: FormikHelpers<LoginValues>
   ) => {
     try {
       await dispatch(loginUser(values)).unwrap();
       navigate("/projects");
-    } catch (err: any) {
-      setFieldError("server", err || "Login failed. Please try again.");
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : typeof err === "string"
+          ? err
+          : "Login failed. Please try again.";
+
+      setFieldError("server", errorMessage);
     }
   };
 
@@ -46,7 +64,7 @@ export default function LoginPage() {
         {/* Login Card */}
         <div className="bg-white rounded-2xl shadow-xl p-8 backdrop-blur-sm bg-opacity-95">
           <Formik
-            initialValues={{ email: "", password: "", server: undefined }}
+            initialValues={initialLoginValues}
             validationSchema={loginSchema}
             onSubmit={handleSubmit}
           >

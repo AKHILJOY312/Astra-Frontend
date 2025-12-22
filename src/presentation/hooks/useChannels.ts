@@ -28,6 +28,10 @@ import type {
   EditChannelDTO,
 } from "@/application/repo/IChannelRepository";
 
+interface ChannelError {
+  message: string;
+}
+
 const listChannelsUC = container.get<ListChannelsUseCase>(
   TYPES.ListChannelsUseCase
 );
@@ -58,7 +62,8 @@ export const useChannels = (projectId: string) => {
       const data = await listChannelsUC.execute(projectId);
 
       dispatch(setChannels(data));
-    } catch (err: any) {
+    } catch (error) {
+      const err = error as ChannelError;
       dispatch(
         setChannelError(err.message || "Failed to load channels for project.")
       );
@@ -77,7 +82,8 @@ export const useChannels = (projectId: string) => {
       dispatch(addChannel(newChannel));
       dispatch(setActiveChannel(newChannel));
       return newChannel;
-    } catch (err: any) {
+    } catch (error) {
+      const err = error as ChannelError;
       dispatch(setChannelError(err.message || "Failed to create channel"));
       throw err;
     }
@@ -94,7 +100,8 @@ export const useChannels = (projectId: string) => {
 
       dispatch(updateChannel(updated));
       return updated;
-    } catch (err: any) {
+    } catch (error) {
+      const err = error as ChannelError;
       dispatch(setChannelError(err.message || "Failed to edit channel"));
       throw err;
     }
@@ -109,7 +116,8 @@ export const useChannels = (projectId: string) => {
     try {
       await deleteChannelUC.execute(projectId, channelId);
       dispatch(removeChannel(channelId));
-    } catch (err: any) {
+    } catch (error) {
+      const err = error as ChannelError;
       dispatch(setChannelError(err.message || "Failed to delete channel"));
       throw err;
     }

@@ -1,5 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
-import type { UseFormReturn } from "react-hook-form";
+import type { FieldValues, UseFormReturn } from "react-hook-form";
 import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
@@ -15,8 +15,8 @@ export function generateFallbackAvatar(name: string): string {
 }
 
 export function getCookie(cname: string) {
-  let name = cname + "=";
-  let ca = document.cookie.split(";");
+  const name = cname + "=";
+  const ca = document.cookie.split(";");
   for (let i = 0; i < ca.length; i++) {
     let c = ca[i];
     while (c.charAt(0) == " ") {
@@ -30,8 +30,8 @@ export function getCookie(cname: string) {
 }
 
 type FromType = { type?: "default" | "edit" };
-export function canSubmitFrom(
-  form: UseFormReturn<any, any, any>,
+export function canSubmitFrom<TFieldValues extends FieldValues>(
+  form: UseFormReturn<TFieldValues>,
   options?: FromType
 ) {
   if (!options) options = { type: "default" };

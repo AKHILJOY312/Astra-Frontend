@@ -1,4 +1,4 @@
-import { useTheme } from "@/presentation/context/ThemeContext";
+import { useTheme } from "@/presentation/hooks/useTheme";
 
 export const ThemeToggleButton: React.FC = () => {
   const { toggleTheme } = useTheme();
