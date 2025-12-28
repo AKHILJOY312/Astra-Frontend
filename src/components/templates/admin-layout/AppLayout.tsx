@@ -1,8 +1,8 @@
 import { useSidebar } from "@/context/SidebarContext";
 import { Outlet } from "react-router";
-import AppHeader from "./AppHeader";
-import Backdrop from "./Backdrop";
-import AppSidebar from "./AppSidebar";
+import AppHeader from "../../organisms/admin/layout/AppHeader";
+import Backdrop from "../../organisms/admin/layout/Backdrop";
+import AppSidebar from "../../organisms/admin/layout/AppSidebar";
 import { SidebarProvider } from "@/context/SidebarProvider";
 
 const LayoutContent: React.FC = () => {

@@ -23,7 +23,8 @@ export default function CreateProjectModal() {
     name: Yup.string()
       .trim()
       .required("Project name is required")
-      .max(10, "Project name must be at most 100 characters"),
+      .min(3, "Project name must have at least 3 letter")
+      .max(10, "Project name must be at most 10 characters"),
     description: Yup.string()
       .trim()
       .max(500, "Description must be at most 500 characters"),
@@ -65,8 +66,8 @@ export default function CreateProjectModal() {
       dispatch(closeCreateProjectModal());
     } catch (err: unknown) {
       let backendMessage = "Failed to create project";
+      console.log("working2");
       let upgradeRequired = false;
-
       if (typeof err === "object" && err !== null) {
         const e = err as BackendError;
         const res = e.response?.data;

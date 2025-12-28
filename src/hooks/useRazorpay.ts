@@ -2,6 +2,7 @@ import {
   createRazorpayOrder,
   verifyPayment,
 } from "@/services/subscription.service";
+import { logger } from "@/utils/logger";
 import { useState } from "react";
 
 // Razorpay handler response
@@ -102,8 +103,9 @@ export const useRazorpay = () => {
         return;
       }
 
-      const order: RazorpayOrder = (await createRazorpayOrder(planId)).data;
-
+      const response = (await createRazorpayOrder(planId)).data;
+      const order: RazorpayOrder = response.data;
+      logger.debug(order);
       const options: RazorpayOptions = {
         key: order.keyId,
         amount: order.amount,

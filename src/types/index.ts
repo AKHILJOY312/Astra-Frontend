@@ -118,6 +118,26 @@ export type ChannelState = {
   error: string | null;
 };
 
+export type EditChannelModalProps = {
+  onClose: () => void;
+  channel: Channel; // ← Now correct
+  projectId: string;
+};
+export type Role = "manager" | "lead" | "member";
+export type Permission = "manager" | "view" | "message";
+export type CreateChannelModalProps = {
+  onClose: () => void;
+  projectId: string;
+};
+
+export type ApiError = {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+  message?: string;
+};
 //-----------------------------------------
 //        Plan
 //-----------------------------------------

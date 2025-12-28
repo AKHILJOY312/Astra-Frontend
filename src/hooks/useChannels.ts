@@ -60,8 +60,8 @@ export const useChannels = (projectId: string) => {
     try {
       const newChannel = await UserCreateChannel(projectId, dto);
 
-      dispatch(addChannel(newChannel.data));
-      dispatch(setActiveChannel(newChannel.data));
+      dispatch(addChannel(newChannel.data.data));
+      dispatch(setActiveChannel(newChannel.data.data));
       return newChannel;
     } catch (error) {
       const err = error as ChannelError;
@@ -79,7 +79,7 @@ export const useChannels = (projectId: string) => {
     try {
       const updated = await UserEditChannel(projectId, channelId, dto);
 
-      dispatch(updateChannel(updated.data));
+      dispatch(updateChannel(updated.data.data));
       return updated;
     } catch (error) {
       const err = error as ChannelError;

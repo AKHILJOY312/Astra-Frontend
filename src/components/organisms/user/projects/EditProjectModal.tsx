@@ -12,7 +12,7 @@ const EditProjectSchema = Yup.object({
   projectName: Yup.string()
     .trim()
     .min(3, "Project name must be at least 3 characters")
-    .max(100, "Project name cannot exceed 100 characters")
+    .max(20, "Project name cannot exceed 20 characters")
     .required("Project name is required"),
 
   description: Yup.string()

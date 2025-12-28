@@ -16,7 +16,7 @@ import GlobalLoader from "@/components/organisms/user/common/GlobalLoader";
 import AuthLayout from "@/components/templates/auth-layout/AuthLayout";
 import MainLayout from "@/components/templates/landing-layout/MainLayout";
 import UserLayout from "@/components/templates/user-layout/UserLayout";
-import AppLayout from "@/components/organisms/admin/layout/AppLayout";
+import AppLayout from "@/components/templates/admin-layout/AppLayout";
 import NotFound from "@/components/organisms/user/common/NotFound";
 
 const pages = import.meta.glob("../components/pages/**/*.tsx");

@@ -4,7 +4,7 @@ import UpgradePlanModal from "@/components/organisms/user/common/UpgradePlanModa
 import { PlanLimitBanner } from "@/components/organisms/user/common/PlanLimitBanner";
 import InviteMemberModal from "@/components/organisms/user/common/InviteMemberModal";
 import Header from "@/components/organisms/user/workspace/Header";
-import CreateProjectModal from "@/components/organisms/user/common/CreateProjectModal";
+import CreateProjectModal from "@/components/organisms/user/projects/CreateProjectModal";
 export default function UserLayout({
   children,
 }: {

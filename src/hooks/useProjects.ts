@@ -19,6 +19,7 @@ import {
   userUpdateProject,
 } from "@/services/project.service";
 import { getProjectMembers } from "@/services/membership.service";
+import axios from "axios";
 
 export const useProjects = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -59,7 +60,7 @@ export const useProjects = () => {
 
       try {
         const members = await getProjectMembers(projectId);
-        console.log("Memebers: ", members.data.data);
+
         dispatch(setMembers(members.data.data));
       } catch {
         dispatch(setMembersError("Failed to load members"));
@@ -81,17 +82,16 @@ export const useProjects = () => {
         description,
         imageUrl,
       });
-      dispatch(addProject(newProject.data));
+      dispatch(addProject(newProject.data.project));
       return newProject;
     } catch (err: unknown) {
       let message = "Failed to create project";
-
       if (err && typeof err === "object" && "response" in err && err.response) {
         const data = err.response as {
-          error: string;
+          message: string;
           upgradeRequired?: boolean;
         };
-        message = data.error;
+        message = data.message;
 
         if (data.upgradeRequired) {
           dispatch(openUpgradePlanModal());
@@ -111,11 +111,19 @@ export const useProjects = () => {
 
     try {
       const updated = await userUpdateProject(projectId, payload);
-      dispatch(updateProjectSuccess(updated.data));
+      console.log(updated);
+      dispatch(updateProjectSuccess(updated.data.data));
       return updated;
-    } catch {
-      dispatch(setProjectError("Failed to update project"));
-      throw error;
+    } catch (err: unknown) {
+      let message = "Failed to update project";
+
+      if (axios.isAxiosError(err)) {
+        message =
+          err.response?.data?.message || err.response?.data?.error || message;
+      }
+
+      dispatch(setProjectError(message));
+      throw err;
     }
   };
 
