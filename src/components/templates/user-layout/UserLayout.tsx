@@ -1,10 +1,10 @@
 // import { Outlet } from "react-router-dom";
-import Sidebar from "@/components/organisms/user/workspace/Sidebar";
+import Sidebar from "@/components/organisms/user/Workspace/Sidebar";
 import UpgradePlanModal from "@/components/organisms/user/common/UpgradePlanModal";
 import { PlanLimitBanner } from "@/components/organisms/user/common/PlanLimitBanner";
 import InviteMemberModal from "@/components/organisms/user/common/InviteMemberModal";
-import Header from "@/components/organisms/user/workspace/Header";
-import CreateProjectModal from "@/components/organisms/user/projects/CreateProjectModal";
+import Header from "@/components/organisms/user/Workspace/Header";
+import CreateProjectModal from "@/components/organisms/user/Projects/CreateProjectModal";
 export default function UserLayout({
   children,
 }: {

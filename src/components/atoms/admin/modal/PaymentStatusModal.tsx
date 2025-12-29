@@ -7,8 +7,8 @@ import {
   // DialogFooter,
   DialogOverlay,
   DialogClose,
-} from "@/components/atoms/dialogue/index";
-import Button from "@/components/atoms/button/Button";
+} from "@/components/atoms/admin/dialogue/index";
+import Button from "@/components/atoms/admin/button/Button";
 // import { X } from "lucide-react";
 import type { Plan } from "@/types";
 

@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { Check, Sparkles, Loader2, Crown } from "lucide-react";
 import { useRazorpay } from "@/hooks/useRazorpay";
-import { PaymentStatusModal } from "@/components/atoms/modal/PaymentStatusModal";
+import { PaymentStatusModal } from "@/components/atoms/admin/modal/PaymentStatusModal";
 import type { Plan } from "@/types";
 import { getAvailablePlans } from "@/services/plan.service";
 

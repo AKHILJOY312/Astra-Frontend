@@ -1,6 +1,6 @@
-import Button from "@/components/atoms/button/Button";
+import Button from "@/components/atoms/admin/button/Button";
 import { Plus } from "lucide-react";
-import PlanFormDialog from "./PlanFormDialog";
+import PlanFormDialog from "../../../organisms/admin/plan/PlanFormDialog";
 import { useState } from "react";
 
 export default function AddPlanButton() {

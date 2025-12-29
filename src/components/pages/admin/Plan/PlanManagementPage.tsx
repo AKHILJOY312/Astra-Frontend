@@ -3,7 +3,7 @@ import PageBreadcrumb from "@/components/organisms/admin/common/PageBreadCrumb";
 import ComponentCard from "@/components/organisms/admin/common/ComponentCard";
 import PageMeta from "@/components/organisms/admin/common/PageMeta";
 import PlanList from "@/components/organisms/admin/plan/PlanList";
-import AddPlanButton from "@/components/organisms/admin/plan/AddPlanButton";
+import AddPlanButton from "@/components/molecules/admin/plan/AddPlanButton";
 
 export default function PlanManagementPage() {
   return (

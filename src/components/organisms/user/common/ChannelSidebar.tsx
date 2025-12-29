@@ -24,8 +24,8 @@ import {
   openViewMembersModal,
 } from "@/redux/slice/uiSlice";
 
-import { Dropdown } from "@/components/atoms/dropdown/Dropdown";
-import { DropdownItem } from "@/components/atoms/dropdown/DropdownItem";
+import { Dropdown } from "@/components/atoms/admin/dropdown/Dropdown";
+import { DropdownItem } from "@/components/atoms/admin/dropdown/DropdownItem";
 
 import { setActiveChannel } from "@/redux/slice/channelSlice";
 import { setCurrentProject } from "@/redux/slice/projectSlice";

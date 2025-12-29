@@ -4,7 +4,7 @@ import gsap from "gsap";
 // import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import type { ContentBlockProps } from "./types";
-import { Button } from "../common/Button/index";
+import { Button } from "../../../atoms/user/Button/index";
 import { SvgIcon } from "../common/SvgIcon/index";
 import {
   ContentSection,

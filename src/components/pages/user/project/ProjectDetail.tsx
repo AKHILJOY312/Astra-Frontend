@@ -8,8 +8,8 @@ import MessageArea from "@/components/organisms/user/common/MessageArea";
 import { setCurrentProject } from "@/redux/slice/projectSlice";
 import { useProjects } from "@/hooks/useProjects";
 import { useChannels } from "@/hooks/useChannels";
-import ViewMembersModal from "@/components/organisms/user/projects/ViewMembersModal";
-import EditProjectModal from "@/components/organisms/user/projects/EditProjectModal";
+import ViewMembersModal from "@/components/organisms/user/Projects/ViewMembersModal";
+import EditProjectModal from "@/components/organisms/user/Projects/EditProjectModal";
 
 export default function ProjectDetail() {
   const { projectId } = useParams<{ projectId: string }>();
