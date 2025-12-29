@@ -5,7 +5,11 @@ type FailedQueueItem = {
   resolve: (token: string | null) => void;
   reject: (error: unknown) => void;
 };
+let onTokenRefresh: ((token: string) => void) | null = null;
 
+export const setOnTokenRefresh = (callback: (token: string) => void) => {
+  onTokenRefresh = callback;
+};
 const api = axios.create({
   baseURL: "/api",
   withCredentials: true,
@@ -74,6 +78,9 @@ api.interceptors.response.use(
           { withCredentials: true }
         );
         const newToken = data.accessToken;
+        if (onTokenRefresh) {
+          onTokenRefresh(newToken);
+        }
         tokenService.setToken(newToken);
         originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
         processQueue(null, newToken);

@@ -18,6 +18,8 @@ import MainLayout from "@/components/templates/landing-layout/MainLayout";
 import UserLayout from "@/components/templates/user-layout/UserLayout";
 import AppLayout from "@/components/templates/admin-layout/AppLayout";
 import NotFound from "@/components/organisms/user/common/NotFound";
+import { setOnTokenRefresh } from "@/services/api";
+import { setAccessToken } from "@/redux/slice/authSlice";
 
 const pages = import.meta.glob("../components/pages/**/*.tsx");
 
@@ -49,7 +51,9 @@ export default function App() {
   useEffect(() => {
     dispatch(loadUser());
   }, [dispatch]);
-
+  useEffect(() => {
+    setOnTokenRefresh((token) => dispatch(setAccessToken(token)));
+  }, [dispatch]);
   return (
     <BrowserRouter>
       <SocketInitializer />
