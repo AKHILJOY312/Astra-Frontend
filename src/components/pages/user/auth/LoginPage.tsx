@@ -68,7 +68,7 @@ export default function LoginPage() {
             validationSchema={loginSchema}
             onSubmit={handleSubmit}
           >
-            {({ errors, touched, isSubmitting }) => (
+            {({ errors, touched, isSubmitting, dirty }) => (
               <Form className="space-y-5">
                 {/* Server Error Alert */}
                 {errors.server && (
@@ -177,7 +177,7 @@ export default function LoginPage() {
                 {/* Login Button */}
                 <button
                   type="submit"
-                  disabled={loading || isSubmitting}
+                  disabled={loading || isSubmitting || !dirty}
                   className="w-full bg-linear-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-lg font-medium hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg hover:shadow-xl transform hover:-translate-y-0.5"
                 >
                   {loading || isSubmitting ? (

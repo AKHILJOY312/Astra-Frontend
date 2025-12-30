@@ -5,23 +5,10 @@ import type {
   Permission,
   Role,
 } from "@/types";
+import { channelCreationSchema } from "@/utils/validators";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
 
 const roles: Role[] = ["manager", "lead", "member"];
-
-const validationSchema = Yup.object({
-  channelName: Yup.string()
-    .trim()
-    .required("Channel name is required")
-    .min(2, "Minimum 2 characters")
-    .max(30, "Maximum 30 characters"),
-  description: Yup.string().max(200, "Max 200 characters"),
-  visibleToRoles: Yup.array()
-    .of(Yup.string().oneOf(roles))
-    .min(1, "Select at least one role"),
-  permissionsByRole: Yup.object().required(),
-});
 
 export function CreateChannelModal({
   projectId,
@@ -45,7 +32,7 @@ export function CreateChannelModal({
 
         <Formik
           initialValues={initialValues}
-          validationSchema={validationSchema}
+          validationSchema={channelCreationSchema}
           onSubmit={async (values, { setSubmitting, setStatus }) => {
             setStatus(null);
             try {

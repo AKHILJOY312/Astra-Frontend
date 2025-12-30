@@ -93,3 +93,47 @@ export const changePasswordSchema = Yup.object({
     .oneOf([Yup.ref("newPassword")], "Passwords do not match")
     .required("Confirm password is required"),
 });
+
+export const channelCreationSchema = Yup.object({
+  channelName: Yup.string()
+    .trim()
+    .required("Channel name is required")
+    .min(2, "Minimum 2 characters")
+    .max(30, "Maximum 30 characters")
+    // Block dangerous patterns: path traversal, excessive dots/slashes, brackets, etc.
+    .matches(
+      /^[a-zA-Z0-9][a-zA-Z0-9\s\-_]*[a-zA-Z0-9]$/,
+      "Channel name can only contain letters, numbers, spaces, hyphens, and underscores"
+    )
+    .test(
+      "no-invalid-patterns",
+      'Invalid channel name: cannot contain path traversal (../..), repeated slashes, brackets, or special patterns like "..//...///[[]]"',
+      (value) => {
+        if (!value) return true; // required already handled
+
+        // Common dangerous patterns
+        const forbiddenPatterns = [
+          /\.\./, // ".."
+          /\/\//, // "//"
+          /\\\\/, // "\\"
+          /\[.*\]/, // [anything]
+          /\]{2,}/, // ]]
+          /\(\)/, // ()
+          /^[\s._-]+$/, // Only dots, spaces, underscores, hyphens
+          /^\./, // Starts with dot
+          /\.$/, // Ends with dot
+          /[{}[\]<>]/, // Dangerous brackets
+        ];
+
+        return !forbiddenPatterns.some((pattern) => pattern.test(value));
+      }
+    ),
+
+  description: Yup.string().max(200, "Max 200 characters").nullable(),
+
+  visibleToRoles: Yup.array()
+    .of(Yup.string().oneOf(["manager", "lead", "member"]))
+    .min(1, "Select at least one role"),
+
+  permissionsByRole: Yup.object().required(),
+});

@@ -40,7 +40,26 @@ const planSchema = Yup.object()
       .trim()
       .min(3, "Name must be at least 3 characters")
       .max(50, "Name is too long")
-      .required("Name is required"),
+      .required("Name is required")
+      .test("no-invalid-patterns", "Give a proper plan name", (value) => {
+        if (!value) return true; // required already handled
+
+        // Common dangerous patterns
+        const forbiddenPatterns = [
+          /\.\./, // ".."
+          /\/\//, // "//"
+          /\\\\/, // "\\"
+          /\[.*\]/, // [anything]
+          /\]{2,}/, // ]]
+          /\(\)/, // ()
+          /^[\s._-]+$/, // Only dots, spaces, underscores, hyphens
+          /^\./, // Starts with dot
+          /\.$/, // Ends with dot
+          /[{}[\]<>]/, // Dangerous brackets
+        ];
+
+        return !forbiddenPatterns.some((pattern) => pattern.test(value));
+      }),
 
     description: Yup.string()
       .trim()

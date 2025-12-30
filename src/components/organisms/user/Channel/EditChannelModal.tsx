@@ -5,23 +5,10 @@ import type {
   Permission,
   Role,
 } from "@/types";
+import { channelCreationSchema } from "@/utils/validators";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
 
 const roles: Role[] = ["manager", "lead", "member"];
-
-const validationSchema = Yup.object({
-  channelName: Yup.string()
-    .trim()
-    .required("Channel name is required")
-    .min(2, "Minimum 2 characters")
-    .max(30, "Maximum 30 characters"),
-  description: Yup.string().max(200, "Max 200 characters"),
-  visibleToRoles: Yup.array()
-    .of(Yup.string().oneOf(roles))
-    .min(1, "Select at least one role"),
-  permissionsByRole: Yup.object().required(),
-});
 
 export function EditChannelModal({
   projectId,
@@ -44,7 +31,7 @@ export function EditChannelModal({
 
         <Formik
           initialValues={initialValues}
-          validationSchema={validationSchema}
+          validationSchema={channelCreationSchema}
           onSubmit={async (values, { setSubmitting, setStatus }) => {
             setStatus(null);
             try {
@@ -66,7 +53,14 @@ export function EditChannelModal({
             }
           }}
         >
-          {({ values, setFieldValue, isSubmitting, status }) => (
+          {({
+            values,
+            setFieldValue,
+            isSubmitting,
+            isValid,
+            status,
+            dirty,
+          }) => (
             <Form>
               {/* Channel Name */}
               <Field
@@ -171,7 +165,7 @@ export function EditChannelModal({
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !isValid || !dirty}
                   className="px-5 py-2 bg-green-600 hover:bg-green-500 disabled:bg-gray-600 rounded-lg transition font-medium"
                 >
                   {isSubmitting ? "Saving..." : "Save Changes"}
