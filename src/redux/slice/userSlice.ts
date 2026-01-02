@@ -69,19 +69,25 @@ export const uploadProfileImage = createAsyncThunk<
   { rejectValue: string }
 >("user/uploadProfileImage", async (file, { rejectWithValue }) => {
   try {
-    // Step 1: get signed URL
     const { data } = await userApi.getUploadUrl(file.type);
-    const { uploadUrl, imageUrl } = data;
+    const { uploadUrl, fileKey } = data;
 
-    // Step 2: upload to S3
-    await fetch(uploadUrl, {
+    // 2️ Upload to S3
+    const res = await fetch(uploadUrl, {
       method: "PUT",
-      headers: { "Content-Type": file.type },
+      headers: {
+        "Content-Type": file.type,
+      },
       body: file,
     });
 
-    // Step 3: save image URL
-    await userApi.saveProfileImage(imageUrl);
+    if (!res.ok) {
+      throw new Error("S3 upload failed");
+    }
+
+    // 3️ Save image URL in DB
+    const response = await userApi.saveProfileImage(fileKey);
+    const imageUrl = response.data.imageUrl;
 
     return imageUrl;
   } catch (e) {

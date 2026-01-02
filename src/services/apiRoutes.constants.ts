@@ -43,8 +43,8 @@ export const API_ROUTES = {
   },
 
   USERS: {
-    ME: "/users/me",
-    PROFILE_IMAGE_UPLOAD: "/users/me/profile-image/upload-url",
-    PROFILE_IMAGE_SAVE: "/users/me/profile-image",
+    ME: "/user/me",
+    PROFILE_IMAGE_UPLOAD: "/user/profile-image/upload-url",
+    PROFILE_IMAGE_SAVE: "/user//profile-image",
   },
 } as const;

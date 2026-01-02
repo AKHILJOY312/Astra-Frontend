@@ -1,6 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Camera, Trash2, User, Shield, Calendar } from "lucide-react";
+import {
+  Camera,
+  Trash2,
+  User,
+  Shield,
+  Calendar,
+  Edit,
+  AlertCircle,
+} from "lucide-react";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import {
@@ -10,6 +18,7 @@ import {
   uploadProfileImage,
 } from "@/redux/slice/userSlice";
 import { logoutUser } from "@/redux/thunk/authThunks";
+import ImageCropModal from "@/components/organisms/user/Profile/ImageCropModal";
 
 const FALLBACK_IMAGE = "/images/user/DummyUser.jpg";
 
@@ -27,7 +36,10 @@ const UserProfile = () => {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-
+  // const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [cropModalOpen, setCropModalOpen] = useState(false);
+  const [uploadError, setUploadError] = useState<string>("");
   /* ---------------- FETCH PROFILE ---------------- */
   useEffect(() => {
     dispatch(fetchUserProfile());
@@ -45,13 +57,47 @@ const UserProfile = () => {
     dispatch(updateUserProfile({ name, email }));
     setEditOpen(false);
   };
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    dispatch(uploadProfileImage(file));
+    const ALLOWED_TYPES = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/webp",
+      "image/gif",
+    ];
+    const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+    // Reset error
+    setUploadError("");
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      setUploadError(
+        "Invalid file type. Only JPG, PNG, WebP, and GIF are allowed."
+      );
+      e.target.value = ""; // Clear input
+      return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+      setUploadError("File too large. Please select an image under 10MB.");
+      e.target.value = "";
+      return;
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    setImagePreview(previewUrl);
+    setCropModalOpen(true);
   };
+
+  // const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
+
+  //   dispatch(uploadProfileImage(file));
+  // };
 
   const handleDeleteAccount = () => {
     // dispatch(deleteUserAccount());
@@ -70,6 +116,12 @@ const UserProfile = () => {
   return (
     <div className="min-h-screen bg-[#1a1d21] text-gray-100">
       <div className="max-w-4xl mx-auto p-6 pt-24">
+        {uploadError && (
+          <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-lg flex items-center gap-3 text-red-400 text-sm">
+            <AlertCircle size={18} />
+            <span>{uploadError}</span>
+          </div>
+        )}
         {/* Header */}
         <div className="mb-8">
           <h2 className="text-3xl font-bold text-white">Profile Settings</h2>
@@ -81,7 +133,7 @@ const UserProfile = () => {
         {/* ---------------- PROFILE CARD ---------------- */}
         <div className="bg-[#232529] border border-gray-800 rounded-lg shadow-xl overflow-hidden">
           {/* Header Section with Profile Image */}
-          <div className="bg-gradient-to-r from-purple-900/20 to-blue-900/20 p-8 border-b border-gray-800">
+          <div className="bg-linear-to-r from-purple-900/20 to-blue-900/20 p-8 border-b border-gray-800">
             <div className="flex items-start gap-6">
               <div className="relative group">
                 <img
@@ -102,7 +154,7 @@ const UserProfile = () => {
                   type="file"
                   hidden
                   accept="image/*"
-                  onChange={handleImageUpload}
+                  onChange={handleImageSelect}
                 />
               </div>
 
@@ -111,6 +163,7 @@ const UserProfile = () => {
                   {profile.name}
                 </h3>
                 <p className="text-gray-400 mt-1">{profile.email}</p>
+
                 <div className="flex items-center gap-2 mt-3">
                   <div
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${
@@ -133,7 +186,7 @@ const UserProfile = () => {
             {profile.plan && (
               <div className="bg-[#1a1d21] border border-gray-800 rounded-lg p-5">
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-linear-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
                     <User size={16} className="text-white" />
                   </div>
                   <h4 className="font-semibold text-white">Current Plan</h4>
@@ -183,12 +236,12 @@ const UserProfile = () => {
 
             {/* ACTION BUTTONS */}
             <div className="space-y-3 pt-2">
-              {/* <button
+              <button
                 onClick={() => setEditOpen(true)}
                 className="w-full flex items-center justify-center gap-2 bg-[#1a1d21] hover:bg-[#2a2d31] border border-gray-700 hover:border-gray-600 px-5 py-3 rounded-lg transition-all duration-200 text-gray-200 font-medium"
               >
                 <Edit size={18} /> Edit Profile
-              </button> */}
+              </button>
 
               <button
                 onClick={() => setChangePwdConfirmOpen(true)}
@@ -197,17 +250,34 @@ const UserProfile = () => {
                 Change Password
               </button>
 
-              {/* <button
+              <button
                 onClick={() => setDeleteOpen(true)}
                 className="w-full flex items-center justify-center gap-2 text-red-400 hover:text-red-300 bg-red-500/5 hover:bg-red-500/10 border border-red-500/20 hover:border-red-500/30 px-5 py-3 rounded-lg transition-all duration-200 font-medium"
               >
                 <Trash2 size={18} /> Delete Account
-              </button> */}
+              </button>
             </div>
           </div>
         </div>
       </div>
-
+      {/* ================= CROP IMAGE MODAL ================= */}
+      {cropModalOpen && imagePreview && (
+        <ImageCropModal
+          open={cropModalOpen}
+          imageSrc={imagePreview}
+          error={uploadError}
+          onClose={() => {
+            setCropModalOpen(false);
+            setUploadError(""); // Clear error when closing
+            if (imagePreview) URL.revokeObjectURL(imagePreview);
+            setImagePreview(null);
+          }}
+          onCropComplete={(croppedFile: File) => {
+            setUploadError(""); // Clear on successful crop/upload
+            dispatch(uploadProfileImage(croppedFile));
+          }}
+        />
+      )}
       {/* ================= EDIT PROFILE MODAL ================= */}
       {editOpen && (
         <Modal onClose={() => setEditOpen(false)} title="Edit Profile">
@@ -236,7 +306,7 @@ const UserProfile = () => {
             </div>
             <button
               onClick={handleUpdateProfile}
-              className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
+              className="w-full bg-linear-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white py-3 rounded-lg font-medium transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               Save Changes
             </button>
