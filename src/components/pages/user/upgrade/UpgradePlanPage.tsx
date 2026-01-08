@@ -3,11 +3,11 @@ import { useEffect, useState } from "react";
 import { Check, Sparkles, Loader2, Crown } from "lucide-react";
 import { useRazorpay } from "@/hooks/useRazorpay";
 import { PaymentStatusModal } from "@/components/atoms/admin/modal/PaymentStatusModal";
-import type { Plan } from "@/types";
+import type { UserPlanList } from "@/types";
 import { getAvailablePlans } from "@/services/plan.service";
 
 export default function UpgradePlanPage() {
-  const [plans, setPlans] = useState<Plan[]>([]);
+  const [plans, setPlans] = useState<UserPlanList[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedPlanId, setSelectedPlanId] = useState<string | null>(null);
@@ -18,6 +18,17 @@ export default function UpgradePlanPage() {
     paymentStatus,
     paymentDetails,
   } = useRazorpay();
+  const fetchPlans = async () => {
+    try {
+      setLoading(true);
+      const response = await getAvailablePlans();
+      setPlans(response.data.plans || []);
+    } catch {
+      setError("Failed to load plans. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     getAvailablePlans()
@@ -27,6 +38,12 @@ export default function UpgradePlanPage() {
       .catch(() => setError("Failed to load plans. Please try again."))
       .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    if (paymentStatus === "success") {
+      fetchPlans();
+    }
+  }, [paymentStatus]);
 
   const handleUpgrade = async (planId: string) => {
     try {
@@ -72,6 +89,8 @@ export default function UpgradePlanPage() {
         {plans.map((plan) => {
           const isFree = plan.id === "free";
           const isPro = plan.name === "Pro";
+          const isCurrent = plan.isCurrent;
+
           const hasDiscount = plan.price > plan.finalAmount;
 
           return (
@@ -81,6 +100,12 @@ export default function UpgradePlanPage() {
                 isPro ? "lg:scale-110 z-10" : ""
               }`}
             >
+              {plan.isCurrent && (
+                <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow">
+                  CURRENT
+                </div>
+              )}
+
               {/* Most Popular Badge */}
               {isPro && (
                 <div className="absolute -top-6 left-1/2 -translate-x-1/2 z-20">
@@ -95,9 +120,15 @@ export default function UpgradePlanPage() {
               <div
                 className={`relative rounded-3xl p-8 h-full overflow-hidden transition-all duration-300 ${
                   isPro
-                    ? "bg-linear-to-br from-purple-600 via-purple-700 to-pink-600 text-white shadow-2xl ring-4 ring-purple-400/30"
+                    ? "bg-linear-to-br from-purple-600 via-purple-700 to-pink-600 text-white shadow-2xl "
                     : "bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-xl border border-gray-200 dark:border-gray-700"
-                }`}
+                }
+                ${
+                  plan.isCurrent
+                    ? "ring-2 ring-green-400 bg-green-50 dark:bg-green-900/20"
+                    : ""
+                }
+                `}
               >
                 {/* Plan Name */}
                 <div className="text-center mb-8">
@@ -209,21 +240,21 @@ export default function UpgradePlanPage() {
 
                 {/* CTA Button */}
                 <button
-                  onClick={() => !isFree && handleUpgrade(plan.id)}
-                  disabled={isFree}
+                  onClick={() => !isCurrent && handleUpgrade(plan.id)}
+                  disabled={isCurrent}
                   className={`w-full py-4 rounded-2xl font-bold text-lg transition-all flex items-center justify-center gap-2 ${
-                    isPro
-                      ? "bg-white text-purple-700 hover:bg-gray-100 shadow-lg"
-                      : isFree
+                    isCurrent
                       ? "bg-gray-200 dark:bg-gray-700 text-gray-500 cursor-not-allowed"
+                      : isPro
+                      ? "bg-white text-purple-700 hover:bg-gray-100 shadow-lg"
                       : "bg-linear-to-r from-purple-600 to-indigo-600 text-white hover:from-purple-700 hover:to-indigo-700 shadow-lg"
                   }`}
                 >
-                  {isFree
-                    ? "Current Plan"
+                  {isCurrent
+                    ? "Your Current Plan"
                     : isPro
                     ? "Upgrade to Pro"
-                    : "Upgrade Now"}
+                    : "Upgrade"}
                 </button>
               </div>
             </div>

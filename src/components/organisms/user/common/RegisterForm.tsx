@@ -88,6 +88,12 @@ const RegisterForm: React.FC = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    return () => {
+      setIsSuccess(false);
+    };
+  }, []);
+
+  useEffect(() => {
     if (message) {
       setIsSuccess(true);
       const timer = setTimeout(() => {

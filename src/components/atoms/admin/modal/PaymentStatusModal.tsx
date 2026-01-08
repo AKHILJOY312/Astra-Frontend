@@ -10,7 +10,7 @@ import {
 } from "@/components/atoms/admin/dialogue/index";
 import Button from "@/components/atoms/admin/button/Button";
 // import { X } from "lucide-react";
-import type { Plan } from "@/types";
+import type { UserPlanList } from "@/types";
 
 interface PaymentDetails {
   planName?: string;
@@ -18,7 +18,7 @@ interface PaymentDetails {
   paymentId?: string;
   date?: string;
   errorMessage?: string;
-  plan?: Plan;
+  plan?: UserPlanList;
 }
 
 interface Props {

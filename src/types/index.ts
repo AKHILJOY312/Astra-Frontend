@@ -158,6 +158,18 @@ export type Plan = {
   updatedAt: string;
 };
 
+export type UserPlanList = {
+  id: string;
+  name: string;
+  description?: string;
+  price: number;
+  finalAmount: number;
+  features: string[];
+  maxProjects: number;
+  maxMembersPerProject: number;
+  isCurrent: boolean;
+};
+
 //-----------------------------------------
 //        UserSubscription
 //-----------------------------------------
