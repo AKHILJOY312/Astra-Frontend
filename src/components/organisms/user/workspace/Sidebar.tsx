@@ -63,7 +63,7 @@ export default function SlackSidebar() {
 
   const user = {
     name: userData.user?.name || "",
-    image: "",
+    image: userData.user?.avatarUrl || "",
     initials: getInitials(userData.user?.name),
     email: userData.user?.email,
   };
@@ -138,9 +138,18 @@ export default function SlackSidebar() {
           className="flex h-12 w-12 items-center justify-center rounded-lg transition-all hover:rounded-xl hover:bg-white/10"
         >
           <div className="relative">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-linear-to-br from-emerald-400 to-teal-600 text-lg font-bold text-white">
-              {user.initials}
+            <div className="flex h-10 w-10 items-center justify-center rounded-full overflow-hidden bg-linear-to-br from-emerald-400 to-teal-600 text-lg font-bold text-white">
+              {user.image ? (
+                <img
+                  src={user.image}
+                  alt={user.name ?? "User avatar"}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span>{user.initials}</span>
+              )}
             </div>
+
             <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-[#381349] bg-green-500" />
           </div>
         </button>
@@ -158,11 +167,21 @@ export default function SlackSidebar() {
               {/* User info */}
               <div className="flex items-center gap-3 rounded-lg p-3 hover:bg-white/10">
                 <div className="relative shrink-0">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-linear-to-br from-emerald-400 to-teal-600 text-xl font-bold text-white">
-                    {user.initials}
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full overflow-hidden bg-linear-to-br from-emerald-400 to-teal-600 text-xl font-bold text-white">
+                    {user.image ? (
+                      <img
+                        src={user.image}
+                        alt={user.name}
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <span>{user.initials}</span>
+                    )}
                   </div>
+
                   <div className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-[#2f2f2f] bg-green-500" />
                 </div>
+
                 <div>
                   <p className="text-sm font-semibold text-white">
                     {user.name}

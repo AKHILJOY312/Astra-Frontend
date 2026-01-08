@@ -11,7 +11,11 @@ import {
 } from "../thunk/authThunks";
 import type { AuthState } from "@/types";
 import { tokenService } from "@/utils/tokenService";
-import { updateUserProfile, verifyOtpAndUpdateEmail } from "./userSlice";
+import {
+  updateUserProfile,
+  uploadProfileImage,
+  verifyOtpAndUpdateEmail,
+} from "./userSlice";
 
 const initialState: AuthState = {
   user: null,
@@ -137,6 +141,12 @@ const authSlice = createSlice({
       .addCase(updateUserProfile.fulfilled, (state, action) => {
         if (state.user) {
           state.user.name = action.payload.name;
+        }
+        state.loading = false;
+      })
+      .addCase(uploadProfileImage.fulfilled, (state, action) => {
+        if (state.user) {
+          state.user.avatarUrl = action.payload;
         }
         state.loading = false;
       })
