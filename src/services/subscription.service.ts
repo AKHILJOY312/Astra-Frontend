@@ -13,3 +13,10 @@ export const getPaymentHistoryForMe = (params: {
   limit: number;
   search?: string;
 }) => apiCaller.get(API_ROUTES.SUBSCRIPTION.PAYMENT_HISTORY, { params });
+
+export const downloadInvoice = async (paymentId: string) => {
+  const res = await apiCaller.get(`/subscription/invoice/${paymentId}`, {
+    responseType: "blob",
+  });
+  return res;
+};

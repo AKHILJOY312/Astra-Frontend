@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import axios, { AxiosError } from "axios";
+import { PATHS } from "@/routes/routeConstant";
 
 interface BackendError {
   message: string;
@@ -48,7 +49,7 @@ const VerifyEmail: React.FC = () => {
           if (type === "reset") {
             navigate(`/reset-password?token=${token}`);
           } else {
-            navigate("/login");
+            navigate(PATHS.AUTH.LOGIN);
           }
         }, 3000);
       } catch (error) {

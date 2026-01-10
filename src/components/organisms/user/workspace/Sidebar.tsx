@@ -17,6 +17,7 @@ import type { AppDispatch } from "@/redux/store/store";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "@/redux/thunk/authThunks";
 import { useAuth } from "@/hooks/useAuth";
+import { PATHS } from "@/routes/routeConstant";
 
 // Helper to clsx-like class merging
 const cn = (...inputs: (string | undefined | false)[]) =>
@@ -45,7 +46,7 @@ export default function SlackSidebar() {
 
   function handleLogout() {
     dispatch(logoutUser());
-    navigate("/login");
+    navigate(PATHS.AUTH.LOGIN);
   }
   function getInitials(name?: string): string {
     if (!name) return "";

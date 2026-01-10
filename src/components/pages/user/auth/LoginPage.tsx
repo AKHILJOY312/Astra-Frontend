@@ -6,6 +6,7 @@ import type { AppDispatch, RootState } from "@/redux/store/store";
 import { Eye, EyeOff, AlertCircle, Loader2, Lock, Mail } from "lucide-react";
 import { Formik, Form, Field, ErrorMessage, type FormikHelpers } from "formik";
 import { loginSchema } from "@/utils/validators";
+import { PATHS } from "@/routes/routeConstant";
 
 interface LoginValues {
   email: string;
@@ -32,7 +33,7 @@ export default function LoginPage() {
   ) => {
     try {
       await dispatch(loginUser(values)).unwrap();
-      navigate("/projects");
+      navigate(PATHS.PROJECT.DASHBOARD);
     } catch (err: unknown) {
       const errorMessage =
         err instanceof Error

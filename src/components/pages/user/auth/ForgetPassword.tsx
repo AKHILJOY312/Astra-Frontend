@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-// import { useNavigate } from "react-router-dom";
+
 import { AlertCircle, Loader2, Mail } from "lucide-react";
 import type { AppDispatch } from "@/redux/store/store";
 import { forgotPassword } from "@/redux/thunk/authThunks";
@@ -13,7 +13,6 @@ export default function ForgotPasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch<AppDispatch>();
-  // const navigate = useNavigate();
 
   const validateEmail = (email: string) =>
     /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);

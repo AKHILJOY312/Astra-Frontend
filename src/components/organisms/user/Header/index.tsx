@@ -6,6 +6,7 @@ import { Button } from "../../../atoms/user/Button/index";
 import Container from "../common/Container";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { PATHS } from "@/routes/routeConstant";
 
 const Header = () => {
   const [visible, setVisible] = useState(false);
@@ -49,11 +50,13 @@ const Header = () => {
       {isAuthenticated ? (
         <>
           <div className="flex items-center gap-4 ml-6">
-            <Button onClick={() => navigate("/projects")}>Project</Button>
+            <Button onClick={() => navigate(PATHS.PROJECT.DASHBOARD)}>
+              Project
+            </Button>
           </div>
           {role == "admin" && (
             <div className="flex items-center gap-4 ml-6">
-              <Button onClick={() => navigate("/admin/dashboard")}>
+              <Button onClick={() => navigate(PATHS.ADMIN.DASHBOARD)}>
                 Admin
               </Button>
             </div>
@@ -62,10 +65,12 @@ const Header = () => {
       ) : (
         <>
           <div className="flex items-center gap-4 ml-6">
-            <Button onClick={() => navigate("/login")}>Login</Button>
+            <Button onClick={() => navigate(PATHS.AUTH.LOGIN)}>Login</Button>
           </div>
           <div className="flex items-center gap-4 ml-6">
-            <Button onClick={() => navigate("/register")}>Sign Up</Button>
+            <Button onClick={() => navigate(PATHS.AUTH.SIGN_UP)}>
+              Sign Up
+            </Button>
           </div>
         </>
       )}

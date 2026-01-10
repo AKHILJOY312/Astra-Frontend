@@ -1,8 +1,12 @@
 import { useEffect, useState } from "react";
 import { Calendar, Download, Search } from "lucide-react";
-import { getPaymentHistoryForMe } from "@/services/subscription.service";
+import {
+  downloadInvoice,
+  getPaymentHistoryForMe,
+} from "@/services/subscription.service";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "@/hooks/useDebounce";
+import { PATHS } from "@/routes/routeConstant";
 
 interface BillingResponse {
   subscription: {
@@ -13,6 +17,7 @@ interface BillingResponse {
     amount: number;
   } | null;
   payments: {
+    paymentId: string;
     invoiceNumber?: string;
     planName: string;
     amount: number;
@@ -35,6 +40,8 @@ const UserBillingHistory = () => {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+
   const navigate = useNavigate();
   const debouncedSearch = useDebounce(search, 400);
 
@@ -55,6 +62,29 @@ const UserBillingHistory = () => {
   useEffect(() => {
     setPage(1);
   }, [debouncedSearch]);
+  const handleDownloadInvoice = async (paymentId: string) => {
+    try {
+      setDownloadingId(paymentId);
+      const res = await downloadInvoice(paymentId);
+
+      const url = window.URL.createObjectURL(
+        new Blob([res.data], { type: "application/pdf" })
+      );
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "invoice.pdf";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Invoice download failed", err);
+    } finally {
+      setDownloadingId(null);
+    }
+  };
 
   if (loading) {
     return <p className="p-6 text-gray-400">Loading billing history…</p>;
@@ -75,7 +105,7 @@ const UserBillingHistory = () => {
           <div className="mt-6">
             <button
               onClick={() => {
-                navigate("/upgrade");
+                navigate(PATHS.BILLING.UPGRADE);
               }}
               className="px-6 py-3 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-medium"
             >
@@ -202,8 +232,27 @@ const UserBillingHistory = () => {
                     </td>
                     <td className="px-4 py-3 text-right">
                       {p.canDownloadInvoice && (
-                        <button className="text-purple-400 hover:text-purple-300">
-                          <Download size={16} />
+                        <button
+                          onClick={() => handleDownloadInvoice(p.paymentId)}
+                          disabled={downloadingId === p.paymentId}
+                          className={`
+    flex items-center gap-2 px-3 py-1.5 
+    text-purple-400 hover:text-purple-300 
+    disabled:opacity-50 disabled:cursor-not-allowed
+    transition-all
+  `}
+                          title="Download invoice"
+                        >
+                          {downloadingId === p.paymentId ? (
+                            <>
+                              <div className="relative h-5 w-5">
+                                <div className="absolute inset-0 rounded-full border-2 border-purple-400/30 animate-pulse" />
+                                <div className="absolute inset-1 rounded-full border-2 border-purple-400 border-t-transparent animate-spin" />
+                              </div>
+                            </>
+                          ) : (
+                            <Download size={16} />
+                          )}
                         </button>
                       )}
                     </td>

@@ -14,6 +14,7 @@ import {
 } from "@/components/organisms/user/Card/card";
 import { Loader2, CheckCircle, XCircle } from "lucide-react";
 import axios from "axios";
+import { PATHS } from "@/routes/routeConstant";
 
 type Status = "loading" | "needs-auth" | "accepting" | "success" | "error";
 
@@ -53,7 +54,7 @@ export default function InvitePage() {
 
       // Redirect to dashboard or specific project after 2s
       setTimeout(() => {
-        navigate("/projects"); // or `/projects/${projectId}`
+        navigate(PATHS.PROJECT.DASHBOARD); // or `/projects/${projectId}`
       }, 2000);
     } catch (err) {
       setStatus("error");
@@ -75,11 +76,11 @@ export default function InvitePage() {
 
   const handleLogin = () => {
     // Preserve token after login
-    navigate("/login", { state: { fromInvite: token } });
+    navigate(PATHS.AUTH.LOGIN, { state: { fromInvite: token } });
   };
 
   const handleSignup = () => {
-    navigate("/register", { state: { fromInvite: token } });
+    navigate(PATHS.AUTH.SIGN_UP, { state: { fromInvite: token } });
   };
 
   return (
@@ -145,7 +146,7 @@ export default function InvitePage() {
                   Invitation Failed
                 </p>
                 <p className="text-gray-600 mt-2">{errorMessage}</p>
-                <Button onClick={() => navigate("/")} className="mt-6">
+                <Button onClick={() => navigate(PATHS.HOME)} className="mt-6">
                   Go to Home
                 </Button>
               </div>

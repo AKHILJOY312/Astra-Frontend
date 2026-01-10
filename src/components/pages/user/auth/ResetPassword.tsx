@@ -4,6 +4,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { AlertCircle, Loader2, Lock, Eye, EyeOff } from "lucide-react";
 import type { AppDispatch } from "@/redux/store/store";
 import { resetPassword } from "@/redux/thunk/authThunks";
+import { PATHS } from "@/routes/routeConstant";
 
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
@@ -23,7 +24,7 @@ export default function ResetPasswordPage() {
   // Redirect if no token
   useEffect(() => {
     if (!token) {
-      navigate("/forgot-password");
+      navigate(PATHS.AUTH.FORGOT_PASSWORD);
     }
   }, [token, navigate]);
 
@@ -76,9 +77,9 @@ export default function ResetPasswordPage() {
         setSuccess("Password reset successfully! Redirecting to login...");
         setTimeout(() => {
           if (userRole === "admin") {
-            navigate("/admin/login");
+            navigate(PATHS.ADMIN.LOGIN);
           } else {
-            navigate("/login");
+            navigate(PATHS.AUTH.LOGIN);
           }
         }, 2000);
       } else {

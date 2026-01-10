@@ -7,6 +7,7 @@ import {
   Calendar,
   Edit,
   AlertCircle,
+  ArrowRight,
 } from "lucide-react";
 
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
@@ -23,6 +24,8 @@ import { ChangePasswordModal } from "@/components/organisms/user/Profile/ChangeP
 import { ChangeEmailModal } from "@/components/organisms/user/Profile/ChangeEmailModal";
 import { Modal } from "@/components/molecules/user/profile/Modal";
 import EditProfileModal from "@/components/organisms/user/Profile/EditProfileModal";
+import { useNavigate } from "react-router-dom";
+import { PATHS } from "@/routes/routeConstant";
 
 const FALLBACK_IMAGE = "/images/user/DummyUser.jpg";
 
@@ -40,7 +43,7 @@ const UserProfile = () => {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [cropModalOpen, setCropModalOpen] = useState(false);
   const [uploadError, setUploadError] = useState<string>("");
-
+  const navigate = useNavigate();
   const hasProfileDetails = profile?.about || profile?.phone || profile?.link;
 
   /* ---------------- FETCH PROFILE ---------------- */
@@ -241,6 +244,13 @@ const UserProfile = () => {
                   </div>
                   <h4 className="font-semibold text-white">Current Plan</h4>
                 </div>
+                <button
+                  onClick={() => navigate(PATHS.BILLING.BILLING_HISTORY)}
+                  className="text-sm text-purple-400 hover:text-purple-300 inline-flex items-center gap-1 mb-4"
+                >
+                  View Payment History
+                  <ArrowRight size={14} />
+                </button>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                   <div>
                     <p className="text-gray-500 text-xs uppercase tracking-wide mb-1">
